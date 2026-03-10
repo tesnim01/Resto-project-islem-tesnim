@@ -47,7 +47,7 @@ The user provider loads from the `App\Entity\User` hierarchy (single table inher
 
 ---
 
-## 🛠 Admin Interface
+##  Admin Interface
 
 The admin-facing UI is a server-rendered Symfony application accessible via the normal `main` firewall.
 
@@ -75,7 +75,7 @@ Web controllers are located in `src/Controller/Web/*` and templates in `template
 
 ---
 
-## 🗺 API Routing Overview
+##  API Routing Overview
 
 Most of the JSON API is rooted at `/api` and uses the following patterns:
 
