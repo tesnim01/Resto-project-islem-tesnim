@@ -1,0 +1,15 @@
+{# Action Button Component #}
+{% macro action_button(text, icon, onclick = null, type = 'button', variant = 'yellow', size = '', additional_classes = '') %}
+    <button type="{{ type }}" 
+            class="btn btn-{{ variant }} {{ size }} {{ additional_classes }}"
+            {% if onclick %}onclick="{{ onclick }}"{% endif %}>
+        {% if icon %}<i class="bi {{ icon }} me-2"></i>{% endif %}{{ text }}
+    </button>
+{% endmacro %}
+
+{# Link Button Component #}
+{% macro link_button(text, url, icon, variant = 'yellow-outline', size = '') %}
+    <a href="{{ url }}" class="btn btn-{{ variant }} {{ size }}">
+        {% if icon %}<i class="bi {{ icon }} me-2"></i>{% endif %}{{ text }}
+    </a>
+{% endmacro %}

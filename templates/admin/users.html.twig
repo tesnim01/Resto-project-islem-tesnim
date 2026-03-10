@@ -1,0 +1,380 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Users - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid fade-in">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-yellow mb-3">
+                <i class="bi bi-people me-2"></i>Manage Users
+            </h1>
+            <a href="{{ path('app_dashboard_admin') }}" class="btn btn-yellow-outline">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>All Users</h5>
+                    <button class="btn btn-yellow" data-bs-toggle="modal" data-bs-target="#userModal" onclick="openUserModal()">
+                        <i class="bi bi-person-plus me-2"></i>Create User
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="userFilter" id="filterAll" checked onchange="filterUsers('all')">
+                            <label class="btn btn-yellow-outline" for="filterAll">All Users</label>
+                            
+                            <input type="radio" class="btn-check" name="userFilter" id="filterCustomers" onchange="filterUsers('customer')">
+                            <label class="btn btn-yellow-outline" for="filterCustomers">Customers</label>
+                            
+                            <input type="radio" class="btn-check" name="userFilter" id="filterAdmins" onchange="filterUsers('admin')">
+                            <label class="btn btn-yellow-outline" for="filterAdmins">Admins</label>
+                        </div>
+                    </div>
+                    <div id="usersList" class="row g-3 animate-stagger">
+                        <div class="col-12 text-center py-4">
+                            <div class="spinner-border spinner-border-yellow" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border border-yellow">
+            <div class="modal-header border-bottom border-yellow">
+                <h5 class="modal-title text-yellow">
+                    <i class="bi bi-person-plus me-2"></i><span id="userModalTitle">Create User</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="editUserId" value="">
+
+                    <div class="mb-3">
+                        <label for="userType" class="form-label"><i class="bi bi-shield-lock me-2"></i>Type <span class="text-danger">*</span></label>
+                        <select class="form-select bg-black text-light border-secondary" id="userType" required>
+                            <option value="customer">Customer</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <small class="text-muted">You can’t change type after creation.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userName" class="form-label"><i class="bi bi-person me-2"></i>Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-black text-light border-secondary" id="userName" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label"><i class="bi bi-envelope me-2"></i>Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control bg-black text-light border-secondary" id="userEmail" name="email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label"><i class="bi bi-lock me-2"></i>Password <span class="text-danger" id="passwordRequiredStar">*</span></label>
+                        <input type="password" class="form-control bg-black text-light border-secondary" id="userPassword" name="password" minlength="6">
+                        <small class="text-muted" id="passwordHelp">Minimum 6 characters</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPhone" class="form-label"><i class="bi bi-telephone me-2"></i>Phone</label>
+                        <input type="tel" class="form-control bg-black text-light border-secondary" id="userPhone" name="phone">
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer border-top border-yellow">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-yellow" onclick="saveUser()">
+                    <i class="bi bi-save me-2"></i><span id="userModalSaveText">Save</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let allUsers = [];
+let filteredUsers = [];
+let currentFilter = 'all';
+
+// Load users from API
+async function loadUsers() {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    
+    if (!getTokenFunc || !apiRequestFunc) {
+        setTimeout(loadUsers, 50);
+        return;
+    }
+
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    const usersList = document.getElementById('usersList');
+    
+    try {
+        const response = await apiRequestFunc('/api/admin/users', {
+            method: 'GET'
+        });
+
+        if (!response || !response.ok) {
+            const error = await response.json();
+            usersList.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Error loading users: ${error.error || 'Unknown error'}
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        const data = await response.json();
+        allUsers = data.users || [];
+        filteredUsers = [...allUsers];
+        
+        filterUsers(currentFilter);
+    } catch (error) {
+        console.error('Error loading users:', error);
+        usersList.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    An error occurred while loading users. Please try again.
+                </div>
+            </div>
+        `;
+    }
+}
+
+function filterUsers(type) {
+    currentFilter = type;
+    if (type === 'all') {
+        filteredUsers = [...allUsers];
+    } else if (type === 'customer') {
+        filteredUsers = allUsers.filter(user => user.role === 'ROLE_CUSTOMER');
+    } else if (type === 'admin') {
+        filteredUsers = allUsers.filter(user => user.role === 'ROLE_ADMIN');
+    }
+    displayUsers(filteredUsers);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function displayUsers(users) {
+    const usersList = document.getElementById('usersList');
+    
+    if (!users || users.length === 0) {
+        usersList.innerHTML = '<div class="col-12 text-center text-muted-custom py-5"><i class="bi bi-inbox fs-1 mb-3"></i><p>No users found.</p></div>';
+        return;
+    }
+
+    usersList.innerHTML = users.map(user => {
+        const createdAt = user.createdAt ? (window.formatDateTime ? window.formatDateTime(user.createdAt) : new Date(user.createdAt).toLocaleString()) : 'N/A';
+        const isAdmin = user.role === 'ROLE_ADMIN';
+        
+        return `
+        <div class="col-md-6 col-lg-4">
+            <div class="card user-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title text-yellow mb-0">
+                            <i class="bi bi-person-circle me-2"></i>${escapeHtml(user.name || 'N/A')}
+                        </h5>
+                        <span class="badge ${isAdmin ? 'badge-yellow' : 'bg-info'}">
+                            ${isAdmin ? 'Admin' : 'Customer'}
+                        </span>
+                    </div>
+                    <p class="card-text text-muted-custom mb-2">
+                        <i class="bi bi-envelope me-2"></i>${escapeHtml(user.email || 'N/A')}
+                    </p>
+                    ${user.phone ? `<p class="card-text text-muted-custom mb-2"><i class="bi bi-telephone me-2"></i>${escapeHtml(user.phone)}</p>` : ''}
+                    <small class="text-muted-custom">
+                        <i class="bi bi-calendar me-1"></i>Member since: ${createdAt}
+                    </small>
+                    <div class="d-flex gap-2 mt-3">
+                        <button class="btn btn-sm btn-yellow-outline" onclick="editUser(${user.id})">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${user.id}, '${escapeHtml(user.name || '')}')">
+                            <i class="bi bi-trash me-1"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    }).join('');
+}
+
+function openUserModal() {
+    const form = document.getElementById('userForm');
+    form.reset();
+    document.getElementById('editUserId').value = '';
+    document.getElementById('userModalTitle').textContent = 'Create User';
+    document.getElementById('userModalSaveText').textContent = 'Create';
+
+    const typeSelect = document.getElementById('userType');
+    typeSelect.disabled = false;
+    typeSelect.value = 'customer';
+
+    const pwd = document.getElementById('userPassword');
+    pwd.value = '';
+    pwd.required = true;
+    document.getElementById('passwordRequiredStar').style.display = '';
+    document.getElementById('passwordHelp').textContent = 'Minimum 6 characters';
+}
+
+async function saveUser() {
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    if (!apiRequestFunc) return;
+
+    const editId = document.getElementById('editUserId').value;
+    const type = document.getElementById('userType').value;
+    const name = document.getElementById('userName').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const password = document.getElementById('userPassword').value;
+    const phone = document.getElementById('userPhone').value.trim();
+
+    if (!name || !email) {
+        if (window.showToast) window.showToast('Missing fields', 'Name and email are required.', 'warning');
+        return;
+    }
+
+    const payload = { name, email, phone: phone || null };
+    if (!editId) {
+        if (!password || password.length < 6) {
+            if (window.showToast) window.showToast('Password', 'Password must be at least 6 characters.', 'warning');
+            return;
+        }
+        payload.type = type;
+        payload.password = password;
+    } else if (password) {
+        if (password.length < 6) {
+            if (window.showToast) window.showToast('Password', 'Password must be at least 6 characters.', 'warning');
+            return;
+        }
+        payload.password = password;
+    }
+
+    try {
+        const response = await apiRequestFunc(editId ? `/api/admin/users/${editId}` : '/api/admin/users', {
+            method: editId ? 'PATCH' : 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        if (response && response.ok) {
+            if (window.showToast) window.showToast('Saved', editId ? 'User updated.' : 'User created.', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+            document.getElementById('userForm').reset();
+            await loadUsers();
+        } else {
+            const error = response ? await response.json() : {};
+            if (window.showToast) window.showToast('Error', (error.error || 'Request failed'), 'danger');
+        }
+    } catch (error) {
+        console.error('Error saving user:', error);
+        if (window.showToast) window.showToast('Error', 'Something went wrong. Try again.', 'danger');
+    }
+}
+
+window.editUser = async function(userId) {
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    if (!apiRequestFunc) return;
+
+    try {
+        const response = await apiRequestFunc(`/api/admin/users/${userId}`, { method: 'GET' });
+        if (!response || !response.ok) {
+            const error = response ? await response.json() : {};
+            if (window.showToast) window.showToast('Error', (error.error || 'Failed to load user'), 'danger');
+            return;
+        }
+        const user = await response.json();
+
+        document.getElementById('editUserId').value = user.id;
+        document.getElementById('userModalTitle').textContent = 'Edit User';
+        document.getElementById('userModalSaveText').textContent = 'Save';
+
+        const typeSelect = document.getElementById('userType');
+        typeSelect.value = user.type || 'customer';
+        typeSelect.disabled = true;
+
+        document.getElementById('userName').value = user.name || '';
+        document.getElementById('userEmail').value = user.email || '';
+        document.getElementById('userPhone').value = user.phone || '';
+
+        const pwd = document.getElementById('userPassword');
+        pwd.value = '';
+        pwd.required = false;
+        document.getElementById('passwordRequiredStar').style.display = 'none';
+        document.getElementById('passwordHelp').textContent = 'Leave empty to keep current password';
+
+        const modal = new bootstrap.Modal(document.getElementById('userModal'));
+        modal.show();
+    } catch (e) {
+        console.error(e);
+        if (window.showToast) window.showToast('Error', 'Failed to load user.', 'danger');
+    }
+};
+
+window.deleteUser = async function(userId, userName) {
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    if (!apiRequestFunc) return;
+
+    if (!confirm(`Delete "${userName || 'this user'}"? This cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const response = await apiRequestFunc(`/api/admin/users/${userId}`, { method: 'DELETE' });
+        if (response && response.ok) {
+            if (window.showToast) window.showToast('Deleted', 'User removed.', 'success');
+            await loadUsers();
+        } else {
+            const error = response ? await response.json() : {};
+            if (window.showToast) window.showToast('Error', (error.error || 'Failed to delete user'), 'danger');
+        }
+    } catch (e) {
+        console.error(e);
+        if (window.showToast) window.showToast('Error', 'Failed to delete user.', 'danger');
+    }
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', loadUsers);
+</script>
+
+<style>
+.user-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.user-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(255, 193, 7, 0.2);
+}
+</style>
+{% endblock %}

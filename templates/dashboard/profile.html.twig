@@ -1,0 +1,301 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile - Restaurant Management{% endblock %}
+
+{% block body %}
+<div class="container-fluid fade-in">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-yellow mb-3">
+                <i class="bi bi-person-circle me-2"></i>My Profile
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Account Information</h5>
+                        <button class="btn btn-sm btn-yellow" id="editToggleBtn" onclick="toggleEditMode()">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- View Mode -->
+                    <div id="viewMode">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Name</strong></label>
+                            <p class="text-light" id="profileName">-</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Email</strong></label>
+                            <p class="text-light" id="profileEmail">-</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Phone</strong></label>
+                            <p class="text-light" id="profilePhone">Not provided</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Member Since</strong></label>
+                            <p class="text-light" id="profileCreated">-</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Role</strong></label>
+                            <p id="profileRoles">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Edit Mode -->
+                    <div id="editMode" style="display: none;">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Name</strong></label>
+                            <input type="text" class="form-control" id="editName" placeholder="Enter your name">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Email</strong></label>
+                            <input type="email" class="form-control" id="editEmail" placeholder="Email" disabled>
+                            <small class="text-muted">Email cannot be changed</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Phone</strong></label>
+                            <input type="tel" class="form-control" id="editPhone" placeholder="Enter your phone number">
+                        </div>
+                    </div>
+
+                    <hr class="my-4" style="border-color: var(--bs-grey-light);">
+
+                    <div id="viewModeButtons">
+                        <a href="{{ path('app_dashboard_customer') }}" class="btn btn-yellow-outline">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+
+                    <div id="editModeButtons" style="display: none;">
+                        <button class="btn btn-yellow" id="saveBtn" onclick="saveProfile()">
+                            <i class="bi bi-check me-2"></i>Save Changes
+                        </button>
+                        <button class="btn btn-yellow-outline" id="cancelBtn" onclick="toggleEditMode()">
+                            <i class="bi bi-x me-2"></i>Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global flag to prevent multiple loads
+if (!window._profileDataLoaded) {
+    window._profileDataLoaded = false;
+}
+
+let currentUserData = {};
+
+// Toggle between view and edit modes
+function toggleEditMode() {
+    const viewMode = document.getElementById('viewMode');
+    const editMode = document.getElementById('editMode');
+    const viewModeButtons = document.getElementById('viewModeButtons');
+    const editModeButtons = document.getElementById('editModeButtons');
+    const editToggleBtn = document.getElementById('editToggleBtn');
+
+    if (editMode.style.display === 'none') {
+        // Switch to edit mode
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+        viewModeButtons.style.display = 'none';
+        editModeButtons.style.display = 'block';
+        editToggleBtn.style.display = 'none';
+
+        // Populate edit fields with current data
+        document.getElementById('editName').value = currentUserData.name || '';
+        document.getElementById('editEmail').value = currentUserData.email || '';
+        document.getElementById('editPhone').value = currentUserData.phone || '';
+    } else {
+        // Switch back to view mode
+        viewMode.style.display = 'block';
+        editMode.style.display = 'none';
+        viewModeButtons.style.display = 'block';
+        editModeButtons.style.display = 'none';
+        editToggleBtn.style.display = 'inline-block';
+    }
+}
+
+// Save profile changes
+async function saveProfile() {
+    const apiRequestFunc = window.apiRequest;
+    
+    if (!apiRequestFunc) {
+        alert('Error: API functions not loaded');
+        return;
+    }
+
+    const name = document.getElementById('editName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+
+    if (!name) {
+        alert('Please enter your name');
+        return;
+    }
+
+    try {
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Saving...';
+
+        const response = await apiRequestFunc('/api/dashboard/me', {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: name,
+                phone: phone || null
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update profile');
+        }
+
+        const data = await response.json();
+        currentUserData = data;
+
+        // Update view mode displays
+        document.getElementById('profileName').textContent = data.name;
+        document.getElementById('profilePhone').textContent = data.phone || 'Not provided';
+
+        // Show success message
+        const alertContainer = document.createElement('div');
+        alertContainer.className = 'alert alert-success alert-dismissible fade show mx-3';
+        alertContainer.innerHTML = '<i class="bi bi-check-circle me-2"></i>Profile updated successfully!<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        
+        // Insert alert at the top of container
+        const container = document.querySelector('.container-fluid');
+        const firstChild = container.firstChild;
+        if (firstChild) {
+            container.insertBefore(alertContainer, firstChild);
+        } else {
+            container.appendChild(alertContainer);
+        }
+
+        // Auto-remove alert after 4 seconds
+        setTimeout(() => {
+            alertContainer.remove();
+        }, 4000);
+
+        // Switch back to view mode
+        setTimeout(() => {
+            toggleEditMode();
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="bi bi-check me-2"></i>Save Changes';
+        }, 1000);
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        alert('Error saving profile: ' + error.message);
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="bi bi-check me-2"></i>Save Changes';
+    }
+}
+
+// Load user info from JWT token and API
+async function loadProfileInfo() {
+    // Prevent multiple loads
+    if (window._profileDataLoaded) {
+        return;
+    }
+    
+    // Use window.* functions from app.js
+    const getTokenFunc = window.getToken;
+    const decodeJWTFunc = window.decodeJWT;
+    const apiRequestFunc = window.apiRequest;
+    
+    if (!getTokenFunc || !decodeJWTFunc || !apiRequestFunc) {
+        // Wait for functions to be available
+        setTimeout(loadProfileInfo, 50);
+        return;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    // Mark as loading
+    window._profileDataLoaded = true;
+
+    // First, load from JWT token (fast, always available)
+    const decoded = decodeJWTFunc(token);
+    if (decoded) {
+        const nameEl = document.getElementById('profileName');
+        const emailEl = document.getElementById('profileEmail');
+        const rolesEl = document.getElementById('profileRoles');
+        
+        if (nameEl) nameEl.textContent = decoded.name || '-';
+        if (emailEl) emailEl.textContent = decoded.username || decoded.email || '-';
+        
+        if (rolesEl) {
+            const roles = decoded.roles || [];
+            const rolesHtml = roles.map(role => `<span class="badge badge-yellow me-1">${role}</span>`).join(' ');
+            rolesEl.innerHTML = rolesHtml || '-';
+        }
+    }
+
+    // Then, fetch full user data from API (includes phone, createdAt)
+    try {
+        const response = await apiRequestFunc('/api/dashboard/me', { method: 'GET' });
+        if (response && response.ok) {
+            const data = await response.json();
+            if (data) {
+                currentUserData = data;
+
+                // Update with full user data
+                const nameEl = document.getElementById('profileName');
+                const emailEl = document.getElementById('profileEmail');
+                const phoneEl = document.getElementById('profilePhone');
+                const createdEl = document.getElementById('profileCreated');
+                const rolesEl = document.getElementById('profileRoles');
+                
+                if (data.name && nameEl) nameEl.textContent = data.name;
+                if (data.email && emailEl) emailEl.textContent = data.email;
+                if (phoneEl) {
+                    phoneEl.textContent = data.phone || 'Not provided';
+                }
+                if (data.createdAt && createdEl) {
+                    const date = new Date(data.createdAt);
+                    createdEl.textContent = date.toLocaleDateString();
+                }
+                if (data.roles && data.roles.length > 0 && rolesEl) {
+                    const rolesHtml = data.roles.map(role => `<span class="badge badge-yellow me-1">${role}</span>`).join(' ');
+                    rolesEl.innerHTML = rolesHtml;
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        window._profileDataLoaded = false; // Allow retry on error
+    }
+}
+
+// Reset flag on page unload
+window.addEventListener('beforeunload', function() {
+    window._profileDataLoaded = false;
+});
+
+// Load on DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadProfileInfo);
+} else {
+    loadProfileInfo();
+}
+</script>
+{% endblock %}

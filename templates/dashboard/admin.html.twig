@@ -1,0 +1,292 @@
+{% extends 'base.html.twig' %}
+{% import 'components.html.twig' as components %}
+
+{% block title %}Admin Dashboard - Restaurant Management{% endblock %}
+
+{% block body %}
+<div class="container-fluid fade-in">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-yellow mb-3">
+                <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+            </h1>
+            <p class="text-muted-custom">Welcome back, <strong class="text-yellow" id="adminUserName">Admin</strong>. Let’s keep things running smoothly.</p>
+        </div>
+    </div>
+
+    {# Stats Cards #}
+    <div class="row g-4 mb-4 animate-stagger">
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+            {{ components.stat_card('Total Orders', 'totalOrders', 'bi-cart-check') }}
+        </div>
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+            {{ components.stat_card('Total Products', 'totalProducts', 'bi-menu-button-wide') }}
+        </div>
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+            {{ components.stat_card('Total Customers', 'totalCustomers', 'bi-people') }}
+        </div>
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+            {{ components.stat_card('Categories', 'totalCategories', 'bi-tags') }}
+        </div>
+    </div>
+
+    {# Management Actions #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Management</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <button class="btn btn-yellow w-100" onclick="manageProducts()">
+                                <i class="bi bi-menu-button-wide me-2"></i>Manage Products
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-yellow-outline w-100" onclick="manageCategories()">
+                                <i class="bi bi-tags me-2"></i>Manage Categories
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-yellow-outline w-100" onclick="manageOrders()">
+                                <i class="bi bi-cart me-2"></i>Manage Orders
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-yellow-outline w-100" onclick="manageUsers()">
+                                <i class="bi bi-people me-2"></i>Manage Users
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Recent Orders Table #}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <div class="spinner-border spinner-border-yellow" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load user info from JWT token
+// Check if user should be on this dashboard (redirect customers to customer dashboard)
+function checkAdminDashboardAccess() {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const decodeJWTFunc = window.decodeJWT || (typeof decodeJWTLocal === 'function' ? decodeJWTLocal : null);
+    
+    if (!getTokenFunc || !decodeJWTFunc) {
+        setTimeout(checkAdminDashboardAccess, 50);
+        return;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    const decoded = decodeJWTFunc(token);
+    if (decoded && decoded.roles) {
+        const roles = decoded.roles || [];
+        const isAdmin = roles.some(role => {
+            const roleStr = role.toString().toUpperCase();
+            return roleStr === 'ROLE_ADMIN';
+        });
+        
+        // If not admin, redirect to customer dashboard
+        if (!isAdmin) {
+            console.log('Admin dashboard: Customer detected, redirecting to customer dashboard');
+            window.location.href = '{{ path('app_dashboard_customer') }}';
+            return;
+        }
+    }
+}
+
+function loadAdminUserInfo() {
+    // Use window.* functions from app.js
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const decodeJWTFunc = window.decodeJWT || (typeof decodeJWTLocal === 'function' ? decodeJWTLocal : null);
+    
+    if (!getTokenFunc || !decodeJWTFunc) {
+        return; // Functions not ready yet
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    const decoded = decodeJWTFunc(token);
+    if (decoded) {
+        const nameEl = document.getElementById('adminUserName');
+        if (nameEl) {
+            nameEl.textContent = decoded.name || 'Admin';
+        }
+    }
+}
+
+// Global flag to prevent multiple loads
+if (!window._adminDashboardLoaded) {
+    window._adminDashboardLoaded = false;
+}
+
+async function loadAdminDashboard() {
+    // Prevent multiple loads
+    if (window._adminDashboardLoaded) {
+        return;
+    }
+    
+    // Use window.* functions from app.js
+    const getTokenFunc = window.getToken;
+    const apiRequestFunc = window.apiRequest;
+    
+    if (!getTokenFunc || !apiRequestFunc) {
+        // Wait for functions to be available
+        setTimeout(loadAdminDashboard, 50);
+        return;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    // Mark as loading
+    window._adminDashboardLoaded = true;
+
+    // Load user info first
+    loadAdminUserInfo();
+
+    try {
+        // Load orders
+        const ordersResponse = await apiRequestFunc('/api/admin/orders', { method: 'GET' });
+        if (ordersResponse && ordersResponse.ok) {
+            const orders = await ordersResponse.json();
+            displayOrders(orders);
+            const totalOrdersEl = document.getElementById('totalOrders');
+            if (totalOrdersEl) {
+                totalOrdersEl.textContent = orders.length;
+            }
+        }
+
+        // Load products count
+        const productsResponse = await apiRequestFunc('/api/public/products', { method: 'GET' });
+        if (productsResponse && productsResponse.ok) {
+            const products = await productsResponse.json();
+            const totalProductsEl = document.getElementById('totalProducts');
+            if (totalProductsEl) {
+                totalProductsEl.textContent = products.length;
+            }
+        }
+
+            // Load categories count
+            const categoriesResponse = await apiRequestFunc('/api/public/categories', { method: 'GET' });
+            if (categoriesResponse && categoriesResponse.ok) {
+                const categoriesData = await categoriesResponse.json();
+                const totalCategoriesEl = document.getElementById('totalCategories');
+                if (totalCategoriesEl) {
+                    totalCategoriesEl.textContent = categoriesData.length;
+                }
+            }
+    } catch (error) {
+        console.error('Error loading admin dashboard:', error);
+        window._adminDashboardLoaded = false; // Allow retry on error
+    }
+}
+
+// Reset flag on page unload
+window.addEventListener('beforeunload', function() {
+    window._adminDashboardLoaded = false;
+});
+
+function displayOrders(orders) {
+    const tbody = document.getElementById('ordersTableBody');
+    
+    if (!orders || orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted-custom">No orders yet</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = orders.slice(0, 10).map(order => `
+        <tr>
+            <td>#${order.id}</td>
+            <td>${order.customer.name}</td>
+            <td>${window.formatDateTime ? window.formatDateTime(order.order_date) : order.order_date}</td>
+            <td><span class="badge badge-yellow">${order.status}</span></td>
+            <td class="text-yellow">${window.formatMoney ? window.formatMoney(order.total_price) : ('$' + order.total_price)}</td>
+            <td>
+                <button class="btn btn-sm btn-yellow-outline" onclick="updateOrderStatus(${order.id})">
+                    <i class="bi bi-pencil"></i> Update
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function manageProducts() {
+    window.location.href = '{{ path('app_admin_products') }}';
+}
+
+function manageCategories() {
+    window.location.href = '{{ path('app_admin_categories') }}';
+}
+
+function manageOrders() {
+    window.location.href = '{{ path('app_admin_orders') }}';
+}
+
+function manageUsers() {
+    window.location.href = '{{ path('app_admin_users') }}';
+}
+
+function updateOrderStatus(orderId) {
+    if (window.showToast) {
+        window.showToast('Coming soon', 'Status updates will be wired to the API next.', 'info');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // First check if user should be on this dashboard
+    checkAdminDashboardAccess();
+    // Then load dashboard data
+    loadAdminDashboard();
+});
+</script>
+{% endblock %}

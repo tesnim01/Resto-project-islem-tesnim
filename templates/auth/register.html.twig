@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - Restaurant Management{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-50">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-yellow fade-in" data-aos="zoom-in" data-aos-duration="600">
+                <div class="card-header text-center">
+                    <i class="bi bi-person-plus fs-1 mb-2"></i>
+                    <h3 class="mb-0">Create Account</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div id="registerAlert" class="alert d-none" role="alert"></div>
+
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">
+                                <i class="bi bi-person me-2"></i>Full Name
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="name" 
+                                name="name" 
+                                required 
+                                autofocus
+                                placeholder="Enter your full name"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope me-2"></i>Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                id="email" 
+                                name="email" 
+                                required
+                                placeholder="Enter your email"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">
+                                <i class="bi bi-telephone me-2"></i>Phone Number (Optional)
+                            </label>
+                            <input 
+                                type="tel" 
+                                class="form-control" 
+                                id="phone" 
+                                name="phone"
+                                placeholder="Enter your phone number"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-lock me-2"></i>Password
+                            </label>
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="password" 
+                                name="password" 
+                                required
+                                minlength="6"
+                                placeholder="Enter your password (min 6 characters)"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">
+                                <i class="bi bi-lock-fill me-2"></i>Confirm Password
+                            </label>
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="confirmPassword" 
+                                name="confirmPassword" 
+                                required
+                                placeholder="Confirm your password"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-yellow w-100 mb-3">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </button>
+                    </form>
+
+                    <hr class="my-4" style="border-color: var(--bs-grey-light);">
+
+                    <div class="text-center">
+                        <p class="text-muted-custom mb-0">Already have an account?</p>
+                        <a href="{{ path('app_login') }}" class="btn btn-yellow-outline mt-2">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login Here
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+        showAlert('Passwords do not match!', 'danger');
+        return;
+    }
+
+    const data = {
+        email: document.getElementById('email').value,
+        password: password,
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value || null
+    };
+
+    try {
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showAlert('Account created successfully! Redirecting to login...', 'success');
+            setTimeout(() => {
+                window.location.href = '{{ path('app_login') }}';
+            }, 2000);
+        } else {
+            showAlert(result.error || 'Registration failed. Please try again.', 'danger');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert('An error occurred. Please try again.', 'danger');
+    }
+});
+
+function showAlert(message, type) {
+    const alertDiv = document.getElementById('registerAlert');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.textContent = message;
+    alertDiv.classList.remove('d-none');
+    
+    setTimeout(() => {
+        alertDiv.classList.add('d-none');
+    }, 5000);
+}
+</script>
+
+<style>
+.min-vh-50 {
+    min-height: 70vh;
+}
+</style>
+{% endblock %}

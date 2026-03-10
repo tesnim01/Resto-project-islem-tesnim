@@ -1,0 +1,72 @@
+{# Form Input Component #}
+{% macro form_input(id, label, icon, type = 'text', required = false, placeholder = '', value = '', additional_attrs = '') %}
+    <div class="mb-3">
+        <label for="{{ id }}" class="form-label">
+            {% if icon %}<i class="bi {{ icon }} me-2"></i>{% endif %}
+            {{ label }}
+            {% if required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+        <input type="{{ type }}" 
+               class="form-control bg-black text-light border-secondary" 
+               id="{{ id }}" 
+               name="{{ id|replace({(id ~ '_'): ''}) }}" 
+               {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+               {% if value %}value="{{ value }}"{% endif %}
+               {% if required %}required{% endif %}
+               {{ additional_attrs|raw }}>
+    </div>
+{% endmacro %}
+
+{# Textarea Component #}
+{% macro form_textarea(id, label, icon, rows = 3, required = false, placeholder = '', value = '') %}
+    <div class="mb-3">
+        <label for="{{ id }}" class="form-label">
+            {% if icon %}<i class="bi {{ icon }} me-2"></i>{% endif %}
+            {{ label }}
+            {% if required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+        <textarea class="form-control bg-black text-light border-secondary" 
+                  id="{{ id }}" 
+                  name="{{ id|replace({(id ~ '_'): ''}) }}" 
+                  rows="{{ rows }}"
+                  {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+                  {% if required %}required{% endif %}>{{ value }}</textarea>
+    </div>
+{% endmacro %}
+
+{# Select Component #}
+{% macro form_select(id, label, icon, options = [], required = false, value = '') %}
+    <div class="mb-3">
+        <label for="{{ id }}" class="form-label">
+            {% if icon %}<i class="bi {{ icon }} me-2"></i>{% endif %}
+            {{ label }}
+            {% if required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+        <select class="form-select bg-black text-light border-secondary" 
+                id="{{ id }}" 
+                name="{{ id|replace({(id ~ '_'): ''}) }}"
+                {% if required %}required{% endif %}>
+            {% for option in options %}
+                <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>
+                    {{ option.label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+{% endmacro %}
+
+{# Checkbox Switch Component #}
+{% macro form_switch(id, label, checked = false) %}
+    <div class="mb-3">
+        <div class="form-check form-switch">
+            <input class="form-check-input bg-black border-yellow" 
+                   type="checkbox" 
+                   id="{{ id }}" 
+                   name="{{ id|replace({(id ~ '_'): ''}) }}"
+                   {% if checked %}checked{% endif %}>
+            <label class="form-check-label" for="{{ id }}">
+                {{ label }}
+            </label>
+        </div>
+    </div>
+{% endmacro %}

@@ -1,0 +1,744 @@
+/* Dark Theme - Black, Grey, Yellow */
+:root {
+    --bs-dark: #000000;
+    --bs-black: #0a0a0a;
+    --bs-yellow: #ffd700;
+    --bs-yellow-dark: #ccaa00;
+    --bs-yellow-light: #ffed4e;
+    --bs-grey: #2d2d2d;
+    --bs-grey-light: #404040;
+    --bs-grey-dark: #1a1a1a;
+}
+
+body {
+    background-color: var(--bs-dark);
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Custom Yellow Accent */
+.text-yellow {
+    color: var(--bs-yellow) !important;
+}
+
+.bg-yellow {
+    background-color: var(--bs-yellow) !important;
+}
+
+.border-yellow {
+    border-color: var(--bs-yellow) !important;
+}
+
+.btn-yellow {
+    background-color: var(--bs-yellow);
+    color: #000;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-yellow:hover {
+    background-color: var(--bs-yellow-dark);
+    color: #000;
+}
+
+.btn-yellow-outline {
+    border: 2px solid var(--bs-yellow);
+    color: var(--bs-yellow);
+    background-color: transparent;
+}
+
+.btn-yellow-outline:hover {
+    background-color: var(--bs-yellow);
+    color: #000;
+}
+
+.btn-outline-yellow {
+    border: 1px solid var(--bs-yellow);
+    color: var(--bs-yellow);
+    background-color: transparent;
+}
+
+.btn-outline-yellow:hover {
+    background-color: var(--bs-yellow);
+    color: #000;
+    border-color: var(--bs-yellow);
+}
+
+/* Navbar Styling with Animations */
+.navbar {
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.1);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.navbar.scrolled {
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar-brand::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--bs-yellow);
+    transition: width 0.3s ease;
+}
+
+.navbar-brand:hover::after {
+    width: 100%;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0.5rem 1rem !important;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--bs-yellow);
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 80%;
+}
+
+.nav-link:hover {
+    color: var(--bs-yellow) !important;
+    transform: translateY(-2px);
+}
+
+/* Cards with Modern Animations */
+.card {
+    background-color: var(--bs-grey);
+    border: 1px solid var(--bs-grey-light);
+    border-radius: 12px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--bs-yellow), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.card:hover::before {
+    transform: translateX(100%);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+    border-color: var(--bs-yellow);
+}
+
+.card-header {
+    background-color: var(--bs-grey-dark);
+    border-bottom: 2px solid var(--bs-yellow);
+    color: var(--bs-yellow);
+    font-weight: 600;
+}
+
+.card-body {
+    z-index: 1;
+}
+
+/* Forms */
+.form-control {
+    background-color: var(--bs-grey-dark);
+    border: 1px solid var(--bs-grey-light);
+    color: #ffffff;
+}
+
+.form-control:focus {
+    background-color: var(--bs-grey-dark);
+    border-color: var(--bs-yellow);
+    color: #ffffff;
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+}
+
+.form-label {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.form-select {
+    background-color: var(--bs-grey-dark);
+    border: 1px solid var(--bs-grey-light);
+    color: #ffffff;
+}
+
+.form-select:focus {
+    background-color: var(--bs-grey-dark);
+    border-color: var(--bs-yellow);
+    color: #ffffff;
+}
+
+/* Tables */
+.table-dark {
+    --bs-table-bg: var(--bs-grey);
+    --bs-table-border-color: var(--bs-grey-light);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--bs-grey-light);
+    color: var(--bs-yellow);
+}
+
+/* Badges */
+.badge {
+    padding: 0.35em 0.65em;
+}
+
+.badge-yellow {
+    background-color: var(--bs-yellow);
+    color: #000;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    z-index: 10000 !important;
+}
+
+.dropdown-menu-dark {
+    background-color: var(--bs-grey-dark);
+    border: 1px solid var(--bs-grey-light);
+    z-index: 10000 !important;
+}
+
+.dropdown-item {
+    color: #ffffff;
+    position: relative;
+    z-index: 10001 !important;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bs-grey);
+    color: var(--bs-yellow);
+}
+
+/* Buttons with Modern Effects */
+.btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: visible;
+    transform: translateZ(0);
+}
+
+.btn::before {
+    display: none !important;
+}
+
+.btn:hover::before {
+    display: none !important;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-yellow {
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-yellow:hover {
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+}
+
+.btn-yellow-outline:hover,
+.btn-outline-yellow:hover {
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Small buttons - disable ripple effect */
+.btn-sm::before {
+    display: none !important;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border-left: 4px solid #ffc107;
+}
+
+/* Loading Spinner */
+.spinner-border-yellow {
+    border-color: var(--bs-yellow);
+    border-right-color: transparent;
+}
+
+/* Product Cards with Modern Animations */
+.product-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.product-card:hover::before {
+    left: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+    border-color: var(--bs-yellow);
+}
+
+.product-card img {
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Category Cards */
+.category-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: var(--bs-yellow);
+    transition: width 0.4s ease;
+}
+
+.category-card:hover::after {
+    width: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(255, 215, 0, 0.3);
+}
+
+/* User Cards */
+.user-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.user-card:hover {
+    transform: translateY(-5px) rotate(1deg);
+    box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+}
+
+/* Review Cards */
+.review-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    position: relative;
+}
+
+.review-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--bs-yellow);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover::before {
+    transform: scaleY(1);
+}
+
+.review-card:hover {
+    transform: translateX(5px) translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+    border-color: var(--bs-yellow);
+}
+
+/* Dashboard Stats with Animations */
+.stat-card {
+    background: linear-gradient(135deg, var(--bs-grey) 0%, var(--bs-grey-dark) 100%);
+    border-left: 4px solid var(--bs-yellow);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
+    border-left-width: 6px;
+}
+
+.stat-card .stat-icon {
+    font-size: 2.5rem;
+    color: var(--bs-yellow);
+    transition: all 0.4s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.2) rotate(5deg);
+    animation: pulse 2s infinite;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bs-yellow);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-value {
+    transform: scale(1.1);
+}
+
+/* Modern Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.6s ease-out;
+}
+
+.slide-in-up {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.slide-in-down {
+    animation: slideInDown 0.6s ease-out;
+}
+
+.scale-in {
+    animation: scaleIn 0.5s ease-out;
+}
+
+/* Staggered animations for lists */
+.animate-stagger {
+    position: relative;
+    z-index: auto;
+    overflow: visible;
+}
+
+.animate-stagger > * {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.6s; }
+.animate-stagger > *:nth-child(7) { animation-delay: 0.7s; }
+.animate-stagger > *:nth-child(8) { animation-delay: 0.8s; }
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-yellow);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-yellow-dark);
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Utility Classes */
+.bg-black {
+    background-color: var(--bs-black) !important;
+}
+
+.text-muted-custom {
+    color: #9d9d9d !important;
+}
+
+.shadow-yellow {
+    box-shadow: 0 4px 6px rgba(255, 215, 0, 0.2) !important;
+}
+
+/* Modal Animations */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translateY(-50px);
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0);
+}
+
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Loading States */
+.loading-shimmer {
+    background: linear-gradient(90deg, var(--bs-grey) 25%, var(--bs-grey-light) 50%, var(--bs-grey) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Number Counter Animation */
+.count-up {
+    animation: countUp 0.6s ease-out;
+}
+
+/* Page Transitions */
+.page-transition {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Floating Animation */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.float-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Glow Effect */
+.glow {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    animation: pulse 2s infinite;
+}
+
+/* Hover Lift Effect */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(255, 215, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .stat-card .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px) scale(1.01);
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+    }
+}
