@@ -1,0 +1,100 @@
+###> symfony/framework-bundle ###
+/.env
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
+# Documentation - Markdown files
+*.md
+!README.md
+!CHANGELOG.md
+
+# Environment variables and sensitive files
+.env
+.env.local
+.env.*.local
+.env.*.php
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.editorconfig
+*.sublime-project
+*.sublime-workspace
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.sql.gz
+*.pdb
+
+# Logs and caching
+*.log
+logs/
+.cache/
+/tmp/
+/temp/
+
+# OS Files
+.DS_Store
+Thumbs.db
+.directory
+
+# Session Files
+/sessions/
+
+# Temporary Files
+*.tmp
+*.bak
+*#
+
+# Docker overrides
+docker-compose.override.yaml
+
+# NPM/Yarn
+package-lock.json
+yarn.lock
+node_modules/
+
+# Sensitive Configuration
+.htpasswd
+
+# Misc
+.vagrant/
+
+# System files
+.AppleDouble
+.LSOverride
+
+# JWT Keys (private)
+config/jwt/private.pem
+config/jwt/*.key
+
+# Backup files
+*.backup
+*.orig
