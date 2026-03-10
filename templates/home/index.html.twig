@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Restaurant Pro{% endblock %}
+
+{% block body %}
+<div class="container py-4 page-transition">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+            <div class="badge text-bg-dark border border-yellow text-yellow px-3 py-2 mb-3">
+                <i class="bi bi-stars me-2"></i>Fresh • Fast • Beautiful
+            </div>
+            <h1 class="display-4 fw-bold text-yellow mb-3">
+                Restaurant Pro
+            </h1>
+            <p class="lead text-muted-custom mb-4">
+                A modern way to browse the menu, place orders, and manage your restaurant in one place.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{{ path('app_products') }}" class="btn btn-yellow btn-lg">
+                    <i class="bi bi-menu-button-wide me-2"></i>Browse Menu
+                </a>
+                <a href="{{ path('app_login') }}" class="btn btn-yellow-outline btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </a>
+                <a href="{{ path('app_register') }}" class="btn btn-outline-yellow btn-lg">
+                    <i class="bi bi-person-plus me-2"></i>Create Account
+                </a>
+            </div>
+
+            <div class="mt-4 text-muted-custom small">
+                <i class="bi bi-shield-check me-2"></i>Secure login with JWT
+                <span class="mx-2">•</span>
+                <i class="bi bi-lightning-charge me-2"></i>Quick ordering
+                <span class="mx-2">•</span>
+                <i class="bi bi-graph-up-arrow me-2"></i>Admin management
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card hover-lift overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="p-4 p-md-5">
+                        <h4 class="text-yellow mb-2"><i class="bi bi-cup-hot-fill me-2"></i>Today’s picks</h4>
+                        <p class="text-muted-custom mb-4">Jump straight into the menu, explore categories, and save time.</p>
+
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="card bg-black border border-secondary h-100">
+                                    <div class="card-body">
+                                        <div class="text-yellow mb-2"><i class="bi bi-tags"></i></div>
+                                        <div class="fw-semibold">Categories</div>
+                                        <div class="text-muted-custom small">Filter quickly</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card bg-black border border-secondary h-100">
+                                    <div class="card-body">
+                                        <div class="text-yellow mb-2"><i class="bi bi-cart-check"></i></div>
+                                        <div class="fw-semibold">Orders</div>
+                                        <div class="text-muted-custom small">Track status</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card bg-black border border-secondary h-100">
+                                    <div class="card-body">
+                                        <div class="text-yellow mb-2"><i class="bi bi-star-fill"></i></div>
+                                        <div class="fw-semibold">Reviews</div>
+                                        <div class="text-muted-custom small">Share feedback</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card bg-black border border-secondary h-100">
+                                    <div class="card-body">
+                                        <div class="text-yellow mb-2"><i class="bi bi-gear"></i></div>
+                                        <div class="fw-semibold">Admin</div>
+                                        <div class="text-muted-custom small">Manage content</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-top border-secondary" style="background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(0,0,0,0));">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="text-muted-custom small">
+                                <i class="bi bi-clock me-2"></i>Average setup: minutes, not days
+                            </div>
+                            <a href="{{ path('app_products') }}" class="text-yellow text-decoration-none">
+                                Explore now <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

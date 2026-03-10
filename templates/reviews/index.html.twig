@@ -1,0 +1,325 @@
+{% extends 'base.html.twig' %}
+{% import 'components.html.twig' as components %}
+
+{% block title %}My Reviews - Restaurant Management{% endblock %}
+
+{% block body %}
+<div class="container-fluid fade-in">
+    {{ components.page_header('My Reviews & Feedback', 'bi-star-fill') }}
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-chat-left-text me-2"></i>My Reviews</h5>
+                </div>
+                <div class="card-body">
+                    <div id="reviewsList">
+                        {% include 'components/_loading_spinner.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted-custom">
+                        <i class="bi bi-lightbulb me-2"></i>Share your experience! Your feedback helps us improve.
+                    </p>
+                    <a href="{{ path('app_products') }}" class="btn btn-yellow w-100">
+                        <i class="bi bi-menu-button-wide me-2"></i>Browse Menu to Review
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Review Modal -->
+<div class="modal fade" id="editReviewModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border border-yellow">
+            <div class="modal-header border-bottom border-yellow">
+                <h5 class="modal-title text-yellow">
+                    <i class="bi bi-pencil me-2"></i>Edit Review
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editReviewForm">
+                    <input type="hidden" id="editReviewId">
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-star me-2"></i>Rating <span class="text-danger">*</span></label>
+                        <div class="rating-input">
+                            <input type="radio" name="editRating" id="editRating5" value="5" class="d-none">
+                            <label for="editRating5" class="rating-star" data-rating="5"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="editRating" id="editRating4" value="4" class="d-none">
+                            <label for="editRating4" class="rating-star" data-rating="4"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="editRating" id="editRating3" value="3" class="d-none">
+                            <label for="editRating3" class="rating-star" data-rating="3"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="editRating" id="editRating2" value="2" class="d-none">
+                            <label for="editRating2" class="rating-star" data-rating="2"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="editRating" id="editRating1" value="1" class="d-none">
+                            <label for="editRating1" class="rating-star" data-rating="1"><i class="bi bi-star-fill"></i></label>
+                        </div>
+                    </div>
+                    {{ components.form_textarea('editReviewComment', 'Comment', 'bi-text-paragraph', 4) }}
+                </form>
+            </div>
+            <div class="modal-footer border-top border-yellow">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-yellow" onclick="saveReview()">
+                    <i class="bi bi-save me-2"></i>Update Review
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let reviews = [];
+
+async function loadReviews() {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    
+    if (!getTokenFunc || !apiRequestFunc) {
+        setTimeout(loadReviews, 50);
+        return;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    try {
+        const response = await apiRequestFunc('/api/reviews', { method: 'GET' });
+        if (response && response.ok) {
+            reviews = await response.json();
+            displayReviews();
+        } else {
+            const error = await response.json();
+            document.getElementById('reviewsList').innerHTML = `<p class="text-danger">Error: ${error.error || 'Failed to load reviews'}</p>`;
+        }
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        document.getElementById('reviewsList').innerHTML = '<p class="text-danger">Error loading reviews. Please try again.</p>';
+    }
+}
+
+function displayReviews() {
+    const reviewsList = document.getElementById('reviewsList');
+    
+    if (!reviews || reviews.length === 0) {
+        reviewsList.innerHTML = `
+            <div class="text-center text-muted-custom py-5">
+                <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+                <p>No reviews yet.</p>
+                <a href="{{ path('app_products') }}" class="text-yellow">Browse menu to write a review!</a>
+            </div>
+        `;
+        return;
+    }
+
+    reviewsList.innerHTML = reviews.map(review => {
+        const stars = Array(5).fill(0).map((_, i) => 
+            i < review.rating 
+                ? '<i class="bi bi-star-fill text-yellow"></i>' 
+                : '<i class="bi bi-star text-muted-custom"></i>'
+        ).join('');
+        
+        return `
+            <div class="card mb-3 review-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            ${review.product.imageUrl 
+                                ? `<img src="${escapeHtml(review.product.imageUrl)}" class="img-fluid rounded" style="max-height: 80px; object-fit: cover;" alt="${escapeHtml(review.product.name)}">`
+                                : `<div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 80px;"><i class="bi bi-image text-muted"></i></div>`
+                            }
+                        </div>
+                        <div class="col-md-10">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="text-yellow mb-1">${escapeHtml(review.product.name)}</h6>
+                                    <div class="rating mb-2">${stars}</div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-yellow-outline" onclick="editReview(${review.id})" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteReview(${review.id})" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            ${review.comment ? `<p class="text-muted-custom mb-2">${escapeHtml(review.comment)}</p>` : '<p class="text-muted-custom mb-2"><em>No comment</em></p>'}
+                            <small class="text-muted-custom">
+                                <i class="bi bi-calendar me-1"></i>${new Date(review.created_at).toLocaleDateString()}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function editReview(reviewId) {
+    const review = reviews.find(r => r.id === reviewId);
+    if (!review) return;
+
+    document.getElementById('editReviewId').value = review.id;
+    document.getElementById('editReviewComment').value = review.comment || '';
+    
+    // Set rating
+    document.querySelectorAll('input[name="editRating"]').forEach(radio => {
+        radio.checked = parseInt(radio.value) === review.rating;
+    });
+    
+    // Update star display
+    updateRatingDisplay('editRating', review.rating);
+    
+    const modal = new bootstrap.Modal(document.getElementById('editReviewModal'));
+    modal.show();
+}
+
+function updateRatingDisplay(namePrefix, rating) {
+    document.querySelectorAll(`label[for^="${namePrefix}"]`).forEach((label, index) => {
+        const starValue = 5 - index;
+        if (starValue <= rating) {
+            label.querySelector('i').classList.remove('bi-star');
+            label.querySelector('i').classList.add('bi-star-fill', 'text-yellow');
+        } else {
+            label.querySelector('i').classList.remove('bi-star-fill', 'text-yellow');
+            label.querySelector('i').classList.add('bi-star');
+        }
+    });
+}
+
+// Rating star click handlers
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[name="editRating"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            updateRatingDisplay('editRating', parseInt(this.value));
+        });
+    });
+    
+    document.querySelectorAll('.rating-star').forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.dataset.rating);
+            document.getElementById(`editRating${rating}`).checked = true;
+            updateRatingDisplay('editRating', rating);
+        });
+    });
+});
+
+async function saveReview() {
+    const reviewId = document.getElementById('editReviewId').value;
+    const rating = document.querySelector('input[name="editRating"]:checked')?.value;
+    const comment = document.getElementById('editReviewComment').value.trim();
+
+    if (!rating) {
+        alert('Please select a rating');
+        return;
+    }
+
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    if (!apiRequestFunc) return;
+
+    try {
+        const response = await apiRequestFunc(`/api/reviews/${reviewId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                rating: parseInt(rating),
+                comment: comment || null
+            })
+        });
+
+        if (response && response.ok) {
+            alert('Review updated successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('editReviewModal')).hide();
+            loadReviews();
+        } else {
+            const error = await response.json();
+            alert('Error: ' + (error.error || 'Failed to update review'));
+        }
+    } catch (error) {
+        console.error('Error updating review:', error);
+        alert('An error occurred while updating the review');
+    }
+}
+
+async function deleteReview(reviewId) {
+    const review = reviews.find(r => r.id === reviewId);
+    if (!confirm(`Are you sure you want to delete your review for "${review?.product?.name || 'this product'}"?`)) {
+        return;
+    }
+
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    if (!apiRequestFunc) return;
+
+    try {
+        const response = await apiRequestFunc(`/api/reviews/${reviewId}`, { method: 'DELETE' });
+        if (response && response.ok) {
+            alert('Review deleted successfully!');
+            loadReviews();
+        } else {
+            const error = await response.json();
+            alert('Error: ' + (error.error || 'Failed to delete review'));
+        }
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        alert('An error occurred while deleting the review');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadReviews);
+</script>
+
+<style>
+.review-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+}
+
+.rating-input {
+    display: flex;
+    gap: 5px;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating-star {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.rating-star:hover,
+.rating-star:hover ~ .rating-star {
+    color: #ffc107;
+}
+
+.rating-star i.bi-star-fill.text-yellow {
+    color: #ffc107;
+}
+</style>
+{% endblock %}

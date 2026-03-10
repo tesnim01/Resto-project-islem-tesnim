@@ -1,0 +1,1115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Menu - Restaurant Management{% endblock %}
+
+{% block body %}
+<div id="landingPage" style="display: none;">
+    <section class="hero-section position-relative overflow-hidden">
+        <div class="hero-background">
+            <div class="hero-slide hero-slide-1 active"></div>
+            <div class="hero-slide hero-slide-2"></div>
+            <div class="hero-slide hero-slide-3"></div>
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="container position-relative" style="z-index: 2; min-height: 90vh; display: flex; align-items: center;">
+            <div class="row w-100">
+                <div class="col-12 text-center" data-aos="fade-up" data-aos-duration="1000">
+                    <h1 class="display-2 fw-bold text-yellow mb-4 hero-title">
+                        <i class="bi bi-cup-hot-fill me-3 float-animation"></i>Welcome to Restaurant Pro
+                    </h1>
+                    <p class="lead text-white mb-5 hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+                        Browse the menu, see what’s fresh, and order in seconds.
+                    </p>
+                    <div class="hero-buttons" data-aos="fade-up" data-aos-delay="400">
+                        <a href="#menu-section" class="btn btn-yellow btn-lg me-3 px-5 py-3">
+                            <i class="bi bi-menu-button-wide me-2"></i>Explore Menu
+                        </a>
+                        <a href="{{ path('app_register') }}" class="btn btn-yellow-outline btn-lg px-5 py-3">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-scroll-indicator">
+            <a href="#menu-section" class="text-yellow">
+                <i class="bi bi-chevron-down fs-1 float-animation"></i>
+            </a>
+        </div>
+    </section>
+
+    {# Featured Categories Section #}
+    <section id="categories-section" class="py-5 bg-gradient-dark">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center" data-aos="fade-up">
+                    <h2 class="display-4 text-yellow mb-3">
+                        <i class="bi bi-tags-fill me-2"></i>Our Categories
+                    </h2>
+                    <p class="lead text-muted-custom">Explore our diverse menu categories</p>
+                </div>
+            </div>
+            <div class="row g-4 mb-4" id="categoryShowcase">
+                <div class="col-12 text-center">
+                    <div class="spinner-border spinner-border-yellow" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# Menu Section #}
+    <section id="menu-section" class="py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center" data-aos="fade-up">
+                    <h2 class="display-4 text-yellow mb-3">
+                        <i class="bi bi-menu-button-wide me-2"></i>Our Menu
+                    </h2>
+                    <p class="lead text-muted-custom">Savor the flavors of excellence</p>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap gap-2 justify-content-center" id="categoryFilter">
+                                <button class="btn btn-yellow active" data-category="all">
+                                    <i class="bi bi-grid me-2"></i>All Categories
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 animate-stagger" id="productsGrid">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border spinner-border-yellow" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# Call to Action Section #}
+    <section class="cta-section py-5 bg-gradient-dark position-relative overflow-hidden">
+        <div class="cta-background cta-gradient"></div>
+        <div class="cta-overlay"></div>
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8" data-aos="zoom-in">
+                    <h2 class="display-3 text-yellow mb-4">Ready to order?</h2>
+                    <p class="lead text-white mb-5">Create an account to add items to your cart and place your first order.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="{{ path('app_register') }}" class="btn btn-yellow btn-lg px-5 py-3">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </a>
+                        <a href="{{ path('app_login') }}" class="btn btn-yellow-outline btn-lg px-5 py-3">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{# Regular Menu for Logged-in Users #}
+<div id="regularMenu" style="display: none;">
+    <div class="container-fluid fade-in">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-yellow mb-3">
+                    <i class="bi bi-menu-button-wide me-2"></i>Our Menu
+                </h1>
+                <p class="text-muted-custom">Explore our delicious selection</p>
+            </div>
+        </div>
+
+        {# Categories Filter #}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2" id="categoryFilterLogged">
+                            <button class="btn btn-yellow active" data-category="all">
+                                <i class="bi bi-grid me-2"></i>All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Products Grid #}
+        <div class="row g-4 animate-stagger" id="productsGridLogged">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border spinner-border-yellow" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border border-yellow">
+            <div class="modal-header border-bottom border-yellow">
+                <h5 class="modal-title text-yellow">
+                    <i class="bi bi-star me-2"></i>Write Review
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewForm">
+                    <input type="hidden" id="reviewProductId">
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-star me-2"></i>Rating <span class="text-danger">*</span></label>
+                        <div class="rating-input">
+                            <input type="radio" name="rating" id="rating5" value="5" class="d-none" required>
+                            <label for="rating5" class="rating-star" data-rating="5"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="rating" id="rating4" value="4" class="d-none">
+                            <label for="rating4" class="rating-star" data-rating="4"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="rating" id="rating3" value="3" class="d-none">
+                            <label for="rating3" class="rating-star" data-rating="3"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="rating" id="rating2" value="2" class="d-none">
+                            <label for="rating2" class="rating-star" data-rating="2"><i class="bi bi-star-fill"></i></label>
+                            <input type="radio" name="rating" id="rating1" value="1" class="d-none">
+                            <label for="rating1" class="rating-star" data-rating="1"><i class="bi bi-star-fill"></i></label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reviewComment" class="form-label"><i class="bi bi-text-paragraph me-2"></i>Comment</label>
+                        <textarea class="form-control bg-black text-light border-secondary" id="reviewComment" name="comment" rows="4" placeholder="Share your experience..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top border-yellow">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-yellow" onclick="window.submitReview()">
+                    <i class="bi bi-save me-2"></i>Submit Review
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Modal -->
+<div class="modal fade" id="cartModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-light border border-yellow">
+            <div class="modal-header border-bottom border-yellow">
+                <h5 class="modal-title text-yellow">
+                    <i class="bi bi-cart me-2"></i>My Cart
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="cartItems">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-yellow">
+                    <h5 class="mb-0 text-yellow">Total:</h5>
+                    <h4 class="mb-0 text-yellow" id="cartTotal">$0.00</h4>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-yellow">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-yellow" id="placeOrderBtn" onclick="window.placeOrder()">
+                    <i class="bi bi-check-circle me-2"></i>Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Use IIFE to avoid variable conflicts with Turbo
+(function() {
+let categories = [];
+let products = [];
+let currentSlide = 0;
+let isViewer = true;
+
+// Helper function to check if user is a viewer (not logged in)
+function checkIfViewer() {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    if (!getTokenFunc) {
+        setTimeout(checkIfViewer, 50);
+        return;
+    }
+    const token = getTokenFunc();
+    isViewer = !token;
+    
+    // Show/hide appropriate layout
+    const landingPage = document.getElementById('landingPage');
+    const regularMenu = document.getElementById('regularMenu');
+    
+    if (isViewer) {
+        if (landingPage) landingPage.style.display = '';
+        if (regularMenu) regularMenu.style.display = 'none';
+        initHeroSlider();
+    } else {
+        if (landingPage) landingPage.style.display = 'none';
+        if (regularMenu) regularMenu.style.display = '';
+    }
+}
+
+// Hero Image Slider
+function initHeroSlider() {
+    const heroSlides = document.querySelectorAll('.hero-slide');
+    if (heroSlides.length === 0) return;
+    
+    setInterval(() => {
+        heroSlides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % heroSlides.length;
+        heroSlides[currentSlide].classList.add('active');
+    }, 5000);
+}
+
+// Helper function to check if user is a customer (not admin or viewer)
+function isCustomer() {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const decodeJWTFunc = window.decodeJWT || (typeof decodeJWT === 'function' ? decodeJWT : null);
+    
+    if (!getTokenFunc || !decodeJWTFunc) {
+        return false;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        return false; // Viewer (not logged in)
+    }
+    
+    const decoded = decodeJWTFunc(token);
+    if (!decoded || !decoded.roles) {
+        return false;
+    }
+    
+    const roles = decoded.roles || [];
+    // User is a customer if they have ROLE_CUSTOMER but NOT ROLE_ADMIN
+    const hasCustomerRole = roles.some(role => {
+        const roleStr = role.toString().toUpperCase();
+        return roleStr === 'ROLE_CUSTOMER';
+    });
+    const hasAdminRole = roles.some(role => {
+        const roleStr = role.toString().toUpperCase();
+        return roleStr === 'ROLE_ADMIN';
+    });
+    
+    return hasCustomerRole && !hasAdminRole;
+}
+
+async function loadCategories() {
+    try {
+        const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+        if (!apiRequestFunc) {
+            setTimeout(loadCategories, 50);
+            return;
+        }
+        const response = await apiRequestFunc('/api/public/categories', { method: 'GET' });
+        if (response) {
+            categories = await response.json();
+            displayCategoryFilter();
+            if (isViewer) {
+                displayCategoryShowcase();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading categories:', error);
+    }
+}
+
+async function loadProducts(categoryId = null, useLoggedGrid = false) {
+    try {
+        const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+        if (!apiRequestFunc) {
+            setTimeout(() => loadProducts(categoryId, useLoggedGrid), 50);
+            return;
+        }
+        let url = '/api/public/products';
+        if (categoryId && categoryId !== 'all') {
+            url += `?category=${categoryId}`;
+        }
+        
+        const response = await apiRequestFunc(url, { method: 'GET' });
+        if (response) {
+            products = await response.json();
+            displayProducts(useLoggedGrid);
+        }
+    } catch (error) {
+        console.error('Error loading products:', error);
+    }
+}
+
+function displayCategoryFilter() {
+    const filterDiv = document.getElementById('categoryFilter');
+    const filterDivLogged = document.getElementById('categoryFilterLogged');
+    
+    const categoriesHtml = categories.map((cat, index) => `
+        <button class="btn btn-yellow-outline" data-category="${cat.id}" data-aos="fade-up" data-aos-delay="${index * 100}">
+            ${escapeHtml(cat.name)}
+        </button>
+    `).join('');
+    
+    const allButton = `
+        <button class="btn btn-yellow active" data-category="all">
+            <i class="bi bi-grid me-2"></i>All Categories
+        </button>
+    `;
+    
+    if (filterDiv) {
+        filterDiv.innerHTML = allButton + categoriesHtml;
+        filterDiv.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterDiv.querySelectorAll('button').forEach(b => {
+                    b.classList.remove('active', 'btn-yellow');
+                    b.classList.add('btn-yellow-outline');
+                });
+                this.classList.add('active', 'btn-yellow');
+                this.classList.remove('btn-yellow-outline');
+                loadProducts(this.dataset.category);
+                document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    }
+    
+    if (filterDivLogged) {
+        filterDivLogged.innerHTML = `
+            <button class="btn btn-yellow active" data-category="all">
+                <i class="bi bi-grid me-2"></i>All
+            </button>
+            ${categories.map(cat => `
+                <button class="btn btn-yellow-outline" data-category="${cat.id}">
+                    ${escapeHtml(cat.name)}
+                </button>
+            `).join('')}
+        `;
+        
+        filterDivLogged.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterDivLogged.querySelectorAll('button').forEach(b => b.classList.remove('active', 'btn-yellow'));
+                this.classList.add('active', 'btn-yellow');
+                loadProducts(this.dataset.category, true);
+            });
+        });
+    }
+}
+
+// Display category showcase for landing page
+function displayCategoryShowcase() {
+    const showcase = document.getElementById('categoryShowcase');
+    if (!showcase || categories.length === 0) return;
+    
+    showcase.innerHTML = categories.map((cat, index) => {
+        const gradientClass = `food-gradient-${(index % 6) + 1}`;
+        return `
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="${index * 150}">
+                <div class="card category-showcase-card h-100 hover-lift">
+                    <div class="category-image ${gradientClass}">
+                        <div class="category-overlay"></div>
+                        <div class="category-content">
+                            <h4 class="text-yellow mb-2">${escapeHtml(cat.name)}</h4>
+                            <p class="text-white small mb-3">${escapeHtml(cat.description || 'Delicious selection')}</p>
+                            <button class="btn btn-yellow btn-sm" data-category="${cat.id}" onclick="scrollToMenu('${cat.id}')">
+                                <i class="bi bi-arrow-right me-1"></i>View Items
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function scrollToMenu(categoryId) {
+    document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+        const btn = document.querySelector(`button[data-category="${categoryId}"]`);
+        if (btn) btn.click();
+    }, 500);
+}
+
+function displayProducts(useLoggedGrid = false) {
+    const grid = useLoggedGrid ? document.getElementById('productsGridLogged') : document.getElementById('productsGrid');
+    
+    if (!products || products.length === 0) {
+        grid.innerHTML = '<div class="col-12 text-center text-muted-custom py-5"><i class="bi bi-inbox fs-1 mb-3 d-block"></i><p>No products available</p></div>';
+        return;
+    }
+
+    const showAddToOrder = isCustomer();
+    
+    grid.innerHTML = products.map((product, index) => {
+        const imageUrl = product.imageUrl || '';
+        const gradientClass = `food-gradient-${(index % 6) + 1}`;
+        const delay = index % 4 * 100;
+        
+        return `
+        <div class="col-md-6 col-lg-4 col-xl-3" data-aos="fade-up" data-aos-delay="${delay}">
+            <div class="card product-card h-100">
+                <div class="product-image-wrapper position-relative overflow-hidden">
+                    ${imageUrl ? `
+                        <img src="${imageUrl}" class="card-img-top product-image" alt="${escapeHtml(product.name)}" style="height: 250px; object-fit: cover;">
+                    ` : `
+                        <div class="product-image-placeholder ${gradientClass}" style="height: 250px;"></div>
+                    `}
+                    ${product.available ? `
+                        <span class="badge badge-yellow position-absolute top-0 end-0 m-2">Available</span>
+                    ` : `
+                        <span class="badge bg-secondary position-absolute top-0 end-0 m-2">Out of Stock</span>
+                    `}
+                    ${showAddToOrder && product.available ? `
+                        <div class="product-overlay">
+                            <div class="product-actions">
+                                <button class="btn btn-yellow btn-sm mb-2" onclick="window.addToCart(${product.id})">
+                                    <i class="bi bi-cart-plus me-1"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-yellow">${escapeHtml(product.name)}</h5>
+                    <p class="card-text text-muted-custom small flex-grow-1">${escapeHtml(product.description || 'Delicious and fresh')}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top border-secondary">
+                        <span class="h4 mb-0 text-yellow fw-bold">${window.formatMoney ? window.formatMoney(product.price) : ('$' + product.price)}</span>
+                        ${product.category ? `<small class="text-muted-custom"><i class="bi bi-tag me-1"></i>${escapeHtml(product.category.name || '')}</small>` : ''}
+                    </div>
+                    ${showAddToOrder && product.available ? `
+                        <button class="btn btn-yellow w-100 mt-3" onclick="window.addToCart(${product.id})">
+                            <i class="bi bi-cart-plus me-2"></i>Add to Order
+                        </button>
+                        <button class="btn btn-yellow-outline w-100 mt-2" onclick="window.viewCart()">
+                            <i class="bi bi-cart me-2"></i>View Cart
+                        </button>
+                    ` : ''}
+                    ${showAddToOrder ? `
+                        <button class="btn btn-outline-yellow w-100 mt-2" onclick="window.showReviewModal(${product.id}, '${escapeHtml(product.name)}')">
+                            <i class="bi bi-star me-2"></i>Write Review
+                        </button>
+                    ` : ''}
+                    ${isViewer ? `
+                        <a href="{{ path('app_register') }}" class="btn btn-yellow-outline w-100 mt-2">
+                            <i class="bi bi-person-plus me-2"></i>Sign Up to Order
+                        </a>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+    }).join('');
+}
+
+// Make addToCart globally accessible
+window.addToCart = function(productId) {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    if (!getTokenFunc || !getTokenFunc()) {
+        if (window.showToast) window.showToast('Login required', 'Please login to place an order.', 'warning');
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+    
+    // Check if user is a customer
+    if (!isCustomer()) {
+        if (window.showToast) window.showToast('Not allowed', 'Only customers can place orders.', 'warning');
+        return;
+    }
+    
+    // Find product details
+    const product = products.find(p => p.id === productId);
+    if (!product) {
+        if (window.showToast) window.showToast('Oops', 'That product could not be found. Please refresh the menu.', 'danger');
+        return;
+    }
+    
+    if (!product.available) {
+        if (window.showToast) window.showToast('Out of stock', 'This item is currently unavailable.', 'warning');
+        return;
+    }
+    
+    // Get or create cart from localStorage
+    let cart = JSON.parse(localStorage.getItem('resto_cart') || '[]');
+    
+    // Check if product already in cart
+    const existingItem = cart.find(item => item.product_id === productId);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            product_id: productId,
+            product_name: product.name,
+            quantity: 1,
+            unit_price: parseFloat(product.price)
+        });
+    }
+    
+    // Save cart to localStorage
+    localStorage.setItem('resto_cart', JSON.stringify(cart));
+    
+    // Show success message
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    if (window.showToast) window.showToast('Added to cart', `${product.name} • ${totalItems} item${totalItems !== 1 ? 's' : ''} in cart`, 'success');
+};
+
+// Get cart from localStorage
+window.getCart = function() {
+    return JSON.parse(localStorage.getItem('resto_cart') || '[]');
+};
+
+// View cart modal
+window.viewCart = function() {
+    const cart = window.getCart();
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
+    
+    if (!cart || cart.length === 0) {
+        cartItems.innerHTML = '<p class="text-center text-muted-custom py-4"><i class="bi bi-cart-x fs-1 mb-3 d-block"></i>Your cart is empty</p>';
+        if (cartTotal) cartTotal.textContent = window.formatMoney ? window.formatMoney(0) : '$0.00';
+        if (placeOrderBtn) placeOrderBtn.disabled = true;
+    } else {
+        let total = 0;
+        cartItems.innerHTML = cart.map(item => {
+            const itemTotal = item.unit_price * item.quantity;
+            total += itemTotal;
+            return `
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1 text-yellow">${escapeHtml(item.product_name || 'Unknown Product')}</h6>
+                        <p class="mb-0 text-muted-custom">${window.formatMoney ? window.formatMoney(item.unit_price) : ('$' + item.unit_price.toFixed(2))} each</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="input-group" style="width: 120px;">
+                            <button class="btn btn-outline-yellow btn-sm" type="button" onclick="window.updateCartQuantity(${item.product_id}, -1)">-</button>
+                            <input type="number" class="form-control bg-black text-light text-center border-secondary" value="${item.quantity}" min="1" readonly>
+                            <button class="btn btn-outline-yellow btn-sm" type="button" onclick="window.updateCartQuantity(${item.product_id}, 1)">+</button>
+                        </div>
+                        <div class="text-yellow" style="min-width: 80px; text-align: right;">
+                            <strong>${window.formatMoney ? window.formatMoney(itemTotal) : ('$' + itemTotal.toFixed(2))}</strong>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm" onclick="window.removeFromCart(${item.product_id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        if (cartTotal) cartTotal.textContent = window.formatMoney ? window.formatMoney(total) : (`$${total.toFixed(2)}`);
+        if (placeOrderBtn) placeOrderBtn.disabled = false;
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById('cartModal'));
+    modal.show();
+};
+
+// Update cart quantity
+window.updateCartQuantity = function(productId, change) {
+    let cart = window.getCart();
+    const item = cart.find(i => i.product_id === productId);
+    
+    if (!item) return;
+    
+    item.quantity += change;
+    
+    if (item.quantity <= 0) {
+        cart = cart.filter(i => i.product_id !== productId);
+    }
+    
+    localStorage.setItem('resto_cart', JSON.stringify(cart));
+    window.viewCart();
+};
+
+// Remove from cart
+window.removeFromCart = function(productId) {
+    let cart = window.getCart();
+    cart = cart.filter(i => i.product_id !== productId);
+    localStorage.setItem('resto_cart', JSON.stringify(cart));
+    window.viewCart();
+};
+
+// Place order
+window.placeOrder = async function() {
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    if (!apiRequestFunc) {
+        if (window.showToast) window.showToast('Error', 'API helper not available yet. Please refresh the page.', 'danger');
+        return;
+    }
+    
+    const cart = window.getCart();
+    if (!cart || cart.length === 0) {
+        if (window.showToast) window.showToast('Cart is empty', 'Add a few items first, then place your order.', 'info');
+        return;
+    }
+    
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
+    if (placeOrderBtn) {
+        placeOrderBtn.disabled = true;
+        placeOrderBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Placing Order...';
+    }
+    
+    try {
+        const items = cart.map(item => ({
+            product_id: item.product_id,
+            quantity: item.quantity
+        }));
+        
+        const response = await apiRequestFunc('/api/orders', {
+            method: 'POST',
+            body: JSON.stringify({ items: items })
+        });
+        
+        if (response && response.ok) {
+            const result = await response.json();
+            if (window.showToast) window.showToast('Order placed', `Order #${result.order.id} confirmed.`, 'success');
+            
+            // Clear cart
+            localStorage.removeItem('resto_cart');
+            
+            // Close modal
+            const cartModal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
+            if (cartModal) cartModal.hide();
+            
+            // Redirect to orders page
+            window.location.href = '{{ path('app_orders') }}';
+        } else {
+            const error = await response.json();
+            if (window.showToast) window.showToast('Couldn’t place order', (error.error || 'Unknown error'), 'danger');
+            if (placeOrderBtn) {
+                placeOrderBtn.disabled = false;
+                placeOrderBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Place Order';
+            }
+        }
+    } catch (error) {
+        console.error('Error placing order:', error);
+        if (window.showToast) window.showToast('Something went wrong', 'Please try again in a moment.', 'danger');
+        if (placeOrderBtn) {
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Place Order';
+        }
+    }
+};
+
+// Escape HTML helper
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Review functionality
+window.showReviewModal = function(productId, productName) {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    if (!getTokenFunc || !getTokenFunc()) {
+        if (window.showToast) window.showToast('Login required', 'Please login to write a review.', 'warning');
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+    
+    if (!isCustomer()) {
+        if (window.showToast) window.showToast('Not allowed', 'Only customers can write reviews.', 'warning');
+        return;
+    }
+    
+    document.getElementById('reviewProductId').value = productId;
+    document.getElementById('reviewComment').value = '';
+    document.querySelectorAll('input[name="rating"]').forEach(radio => radio.checked = false);
+    updateRatingDisplay('rating', 0);
+    
+    const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+    modal.show();
+};
+
+function updateRatingDisplay(namePrefix, rating) {
+    document.querySelectorAll(`label[for^="${namePrefix}"]`).forEach((label, index) => {
+        const starValue = 5 - index;
+        if (starValue <= rating) {
+            label.querySelector('i').classList.remove('bi-star');
+            label.querySelector('i').classList.add('bi-star-fill', 'text-yellow');
+        } else {
+            label.querySelector('i').classList.remove('bi-star-fill', 'text-yellow');
+            label.querySelector('i').classList.add('bi-star');
+        }
+    });
+}
+
+window.submitReview = async function() {
+    const productId = document.getElementById('reviewProductId').value;
+    const rating = document.querySelector('input[name="rating"]:checked')?.value;
+    const comment = document.getElementById('reviewComment').value.trim();
+
+    if (!rating) {
+        if (window.showToast) window.showToast('Missing rating', 'Please select a star rating to submit.', 'warning');
+        return;
+    }
+
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    if (!apiRequestFunc) return;
+
+    try {
+        const response = await apiRequestFunc('/api/reviews', {
+            method: 'POST',
+            body: JSON.stringify({
+                product_id: parseInt(productId),
+                rating: parseInt(rating),
+                comment: comment || null
+            })
+        });
+
+        if (response && response.ok) {
+            if (window.showToast) window.showToast('Thanks!', 'Your review was submitted.', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
+            document.getElementById('reviewForm').reset();
+        } else {
+            const error = await response.json();
+            if (window.showToast) window.showToast('Couldn’t submit', (error.error || 'Failed to submit review'), 'danger');
+        }
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        if (window.showToast) window.showToast('Error', 'An error occurred while submitting the review.', 'danger');
+    }
+};
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Rating star click handlers
+document.addEventListener('DOMContentLoaded', function() {
+    checkIfViewer();
+    
+    document.querySelectorAll('input[name="rating"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            updateRatingDisplay('rating', parseInt(this.value));
+        });
+    });
+    
+    document.querySelectorAll('.rating-star').forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.dataset.rating);
+            const name = this.getAttribute('for').replace('rating', '');
+            document.getElementById(`rating${name}`).checked = true;
+            updateRatingDisplay('rating', rating);
+        });
+    });
+    
+    loadCategories();
+    if (isViewer) {
+        loadProducts();
+    } else {
+        loadProducts(null, true);
+    }
+});
+})(); // Close IIFE
+</script>
+
+<style>
+/* Hero Section */
+.hero-section {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.hero-slide-1 {
+    background: radial-gradient(900px 420px at 20% 30%, rgba(255, 215, 0, 0.28), transparent 60%),
+                radial-gradient(700px 380px at 80% 20%, rgba(255, 255, 255, 0.10), transparent 60%),
+                linear-gradient(135deg, #111 0%, #000 45%, #2d2d2d 100%);
+}
+
+.hero-slide-2 {
+    background: radial-gradient(800px 420px at 70% 30%, rgba(255, 215, 0, 0.25), transparent 60%),
+                radial-gradient(700px 380px at 10% 70%, rgba(255, 255, 255, 0.10), transparent 60%),
+                linear-gradient(135deg, #000 0%, #1a1a1a 45%, #0a0a0a 100%);
+}
+
+.hero-slide-3 {
+    background: radial-gradient(900px 420px at 30% 70%, rgba(255, 215, 0, 0.22), transparent 60%),
+                radial-gradient(700px 380px at 90% 60%, rgba(255, 255, 255, 0.10), transparent 60%),
+                linear-gradient(135deg, #0a0a0a 0%, #000 50%, #2d2d2d 100%);
+}
+
+.cta-gradient {
+    background: radial-gradient(900px 420px at 30% 30%, rgba(255, 215, 0, 0.20), transparent 60%),
+                radial-gradient(700px 380px at 80% 70%, rgba(255, 255, 255, 0.08), transparent 60%),
+                linear-gradient(135deg, #000 0%, #1a1a1a 40%, #2d2d2d 100%);
+}
+
+.product-image-placeholder,
+.category-image {
+    background-size: cover;
+    background-position: center;
+}
+
+/* “Photo-like” gradients (no external image URLs) */
+.food-gradient-1 { background: radial-gradient(800px 260px at 30% 30%, rgba(255,215,0,0.35), transparent 55%), linear-gradient(135deg, #0a0a0a, #2d2d2d); }
+.food-gradient-2 { background: radial-gradient(800px 260px at 70% 30%, rgba(255,215,0,0.28), transparent 55%), linear-gradient(135deg, #1a1a1a, #000); }
+.food-gradient-3 { background: radial-gradient(800px 260px at 40% 70%, rgba(255,215,0,0.25), transparent 55%), linear-gradient(135deg, #000, #404040); }
+.food-gradient-4 { background: radial-gradient(800px 260px at 60% 60%, rgba(255,215,0,0.30), transparent 55%), linear-gradient(135deg, #2d2d2d, #0a0a0a); }
+.food-gradient-5 { background: radial-gradient(800px 260px at 25% 60%, rgba(255,215,0,0.22), transparent 55%), linear-gradient(135deg, #0a0a0a, #1a1a1a); }
+.food-gradient-6 { background: radial-gradient(800px 260px at 75% 65%, rgba(255,215,0,0.26), transparent 55%), linear-gradient(135deg, #1a1a1a, #2d2d2d); }
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.8) 100%);
+    z-index: 1;
+}
+
+.hero-title {
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+    animation: fadeInDown 1s ease-out;
+}
+
+.hero-subtitle {
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+}
+
+.hero-buttons {
+    animation: fadeInUp 1s ease-out 0.4s both;
+}
+
+.hero-scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    animation: bounce 2s infinite;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* Category Showcase Cards */
+.category-showcase-card {
+    border: none;
+    overflow: hidden;
+    border-radius: 15px;
+    height: 300px;
+}
+
+.category-image {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    transition: transform 0.5s ease;
+}
+
+.category-showcase-card:hover .category-image {
+    transform: scale(1.1);
+}
+
+.category-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+    transition: background 0.3s ease;
+}
+
+.category-showcase-card:hover .category-overlay {
+    background: linear-gradient(to bottom, transparent 0%, rgba(255, 215, 0, 0.3) 100%);
+}
+
+.category-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 2;
+}
+
+/* Product Cards Enhanced */
+.product-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0;
+}
+
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.15);
+}
+
+.product-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* CTA Section */
+.cta-section {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.cta-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    z-index: 0;
+}
+
+.cta-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.75) 100%);
+    z-index: 1;
+}
+
+/* Gradient Background */
+.bg-gradient-dark {
+    background: linear-gradient(180deg, var(--bs-dark) 0%, var(--bs-grey-dark) 100%);
+}
+
+.rating-input {
+    display: flex;
+    gap: 5px;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating-star {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.rating-star:hover,
+.rating-star:hover ~ .rating-star {
+    color: #ffc107;
+}
+
+.rating-star i.bi-star-fill.text-yellow {
+    color: #ffc107;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 70vh;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .display-3 {
+        font-size: 2.5rem;
+    }
+}
+</style>
+{% endblock %}

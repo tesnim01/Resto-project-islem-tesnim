@@ -1,0 +1,24 @@
+{# Management Card Component #}
+{% macro management_card(title, icon, content_id, add_button_text = null, add_button_onclick = null, modal_target = null) %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi {{ icon }} me-2"></i>{{ title }}</h5>
+                    {% if add_button_text %}
+                        <button class="btn btn-yellow" 
+                                {% if modal_target %}data-bs-toggle="modal" data-bs-target="#{{ modal_target }}"{% endif %}
+                                {% if add_button_onclick %}onclick="{{ add_button_onclick }}"{% endif %}>
+                            <i class="bi bi-plus-circle me-2"></i>{{ add_button_text }}
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div id="{{ content_id }}" class="animate-stagger">
+                        {{ include('components/_loading_spinner.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

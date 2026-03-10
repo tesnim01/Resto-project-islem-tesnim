@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Orders - Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid fade-in">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-yellow mb-3">
+                <i class="bi bi-cart me-2"></i>Manage Orders
+            </h1>
+            <a href="{{ path('app_dashboard_admin') }}" class="btn btn-yellow-outline">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>All Orders</h5>
+                </div>
+                <div class="card-body">
+                    <div id="ordersList" class="text-center py-4">
+                        <div class="spinner-border spinner-border-yellow" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadOrders() {
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    if (!getTokenFunc) {
+        setTimeout(loadOrders, 50);
+        return;
+    }
+
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    const apiRequestFunc = window.apiRequest || apiRequest;
+    if (!apiRequestFunc) return;
+
+    try {
+        const response = await apiRequestFunc('/api/admin/orders', { method: 'GET' });
+        if (response && response.ok) {
+            const orders = await response.json();
+            displayOrders(orders);
+        }
+    } catch (error) {
+        console.error('Error loading orders:', error);
+    }
+}
+
+function displayOrders(orders) {
+    const ordersList = document.getElementById('ordersList');
+    
+    if (!orders || orders.length === 0) {
+        ordersList.innerHTML = '<div class="text-center text-muted-custom py-5"><i class="bi bi-inbox fs-1 mb-3"></i><p>No orders found.</p></div>';
+        return;
+    }
+
+    const statusBadges = {
+        'PENDING': 'bg-warning text-dark',
+        'PREPARING': 'bg-info text-dark',
+        'DELIVERED': 'bg-success',
+        'CANCELED': 'bg-danger'
+    };
+
+    ordersList.innerHTML = `
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${orders.map(order => {
+                        const statusClass = statusBadges[order.status] || 'bg-secondary';
+                        return `
+                        <tr>
+                            <td><strong class="text-yellow">#${order.id}</strong></td>
+                            <td>
+                                <div>
+                                    <strong>${order.customer.name}</strong><br>
+                                    <small class="text-muted-custom">${order.customer.email}</small>
+                                </div>
+                            </td>
+                            <td><small>${new Date(order.order_date).toLocaleDateString()}</small></td>
+                            <td>
+                                <select class="form-select form-select-sm bg-black text-light border-secondary" 
+                                        onchange="updateOrderStatus(${order.id}, this.value)" 
+                                        id="statusSelect_${order.id}">
+                                    <option value="PENDING" ${order.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
+                                    <option value="PREPARING" ${order.status === 'PREPARING' ? 'selected' : ''}>PREPARING</option>
+                                    <option value="DELIVERED" ${order.status === 'DELIVERED' ? 'selected' : ''}>DELIVERED</option>
+                                    <option value="CANCELED" ${order.status === 'CANCELED' ? 'selected' : ''}>CANCELED</option>
+                                </select>
+                                <span class="badge ${statusClass} ms-2" id="statusBadge_${order.id}">${order.status}</span>
+                            </td>
+                            <td><strong class="text-yellow">$${parseFloat(order.total_price).toFixed(2)}</strong></td>
+                            <td>
+                                <button class="btn btn-sm btn-yellow-outline" onclick="viewOrderDetails(${order.id})" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+async function updateOrderStatus(orderId, newStatus) {
+    const apiRequestFunc = window.apiRequest || apiRequest;
+    if (!apiRequestFunc) return;
+
+    const statusBadges = {
+        'PENDING': 'bg-warning text-dark',
+        'PREPARING': 'bg-info text-dark',
+        'DELIVERED': 'bg-success',
+        'CANCELED': 'bg-danger'
+    };
+
+    try {
+        const response = await apiRequestFunc(`/api/admin/orders/${orderId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        if (response && response.ok) {
+            // Update badge
+            const badge = document.getElementById(`statusBadge_${orderId}`);
+            if (badge) {
+                badge.textContent = newStatus;
+                badge.className = `badge ${statusBadges[newStatus] || 'bg-secondary'} ms-2`;
+            }
+            console.log('Order status updated successfully');
+        } else {
+            const error = await response.json();
+            alert('Error: ' + (error.error || 'Failed to update order status'));
+        }
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        alert('An error occurred while updating order status');
+    }
+}
+
+function viewOrderDetails(orderId) {
+    alert('Order details for order #' + orderId + ' coming soon!');
+}
+
+document.addEventListener('DOMContentLoaded', loadOrders);
+</script>
+{% endblock %}

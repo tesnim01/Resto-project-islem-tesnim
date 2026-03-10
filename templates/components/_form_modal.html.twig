@@ -1,0 +1,26 @@
+{# Form Modal Component #}
+{% macro form_modal(modal_id, title_id, form_id, save_button_text = 'Save', save_onclick = null) %}
+    <div class="modal fade" id="{{ modal_id }}" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-light border border-yellow">
+                <div class="modal-header border-bottom border-yellow">
+                    <h5 class="modal-title text-yellow" id="{{ title_id }}">
+                        {{ block('modal_title') }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="{{ form_id }}">
+                        {{ block('modal_form_content') }}
+                    </form>
+                </div>
+                <div class="modal-footer border-top border-yellow">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-yellow" {% if save_onclick %}onclick="{{ save_onclick }}"{% endif %}>
+                        <i class="bi bi-save me-2"></i>{{ save_button_text }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

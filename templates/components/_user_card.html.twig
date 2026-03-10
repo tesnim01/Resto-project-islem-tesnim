@@ -1,0 +1,28 @@
+{# User Card Component #}
+{% macro user_card(user) %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card user-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title text-yellow mb-0">
+                        <i class="bi bi-person-circle me-2"></i>{{ user.name ?: 'N/A' }}
+                    </h5>
+                    <span class="badge {{ user.role == 'ROLE_ADMIN' ? 'badge-yellow' : 'bg-info' }}">
+                        {{ user.role == 'ROLE_ADMIN' ? 'Admin' : 'Customer' }}
+                    </span>
+                </div>
+                <p class="card-text text-muted-custom mb-2">
+                    <i class="bi bi-envelope me-2"></i>{{ user.email ?: 'N/A' }}
+                </p>
+                {% if user.phone %}
+                    <p class="card-text text-muted-custom mb-2">
+                        <i class="bi bi-telephone me-2"></i>{{ user.phone }}
+                    </p>
+                {% endif %}
+                <small class="text-muted-custom">
+                    <i class="bi bi-calendar me-1"></i>Member since: {{ user.createdAt ? user.createdAt|date('Y-m-d') : 'N/A' }}
+                </small>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

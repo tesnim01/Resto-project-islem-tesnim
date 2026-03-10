@@ -1,0 +1,15 @@
+{# Page Header Component #}
+{% macro page_header(title, icon, back_url = null, back_text = 'Back to Dashboard') %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-yellow mb-3">
+                <i class="bi {{ icon }} me-2"></i>{{ title }}
+            </h1>
+            {% if back_url %}
+                <a href="{{ back_url }}" class="btn btn-yellow-outline">
+                    <i class="bi bi-arrow-left me-2"></i>{{ back_text }}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}

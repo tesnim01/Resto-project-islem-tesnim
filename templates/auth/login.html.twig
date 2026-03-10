@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login - Restaurant Management{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-50">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-yellow fade-in" data-aos="zoom-in" data-aos-duration="600">
+                <div class="card-header text-center">
+                    <i class="bi bi-box-arrow-in-right fs-1 mb-2"></i>
+                    <h3 class="mb-0">Login</h3>
+                </div>
+                <div class="card-body p-4">
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
+
+                    <form id="loginForm" action="{{ path('app_login') }}" method="post">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope me-2"></i>Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                id="email" 
+                                name="email" 
+                                value="{{ last_username }}" 
+                                required 
+                                autofocus
+                                placeholder="Enter your email"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-lock me-2"></i>Password
+                            </label>
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="password" 
+                                name="password" 
+                                required
+                                placeholder="Enter your password"
+                            >
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="_remember_me" checked>
+                            <label class="form-check-label" for="remember_me">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-yellow w-100 mb-3">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </button>
+                    </form>
+
+                    <hr class="my-4" style="border-color: var(--bs-grey-light);">
+
+                    <div class="text-center">
+                        <p class="text-muted-custom mb-0">Don't have an account?</p>
+                        <a href="{{ path('app_register') }}" class="btn btn-yellow-outline mt-2">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Helper function to decode JWT token payload
+function decodeJWT(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
+    }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        email: formData.get('email'),
+        password: formData.get('password')
+    };
+
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.token) {
+            // Store JWT token - use window.setToken if available (triggers navbar update), else local
+            const setTokenFunc = window.setToken || setToken;
+            setTokenFunc(result.token);
+            
+            // Decode JWT token to get roles - use window.decodeJWT if available, else local decodeJWT
+            const decodeJWTFunc = window.decodeJWT || decodeJWT;
+            let decoded = null;
+            let roles = [];
+            
+            if (decodeJWTFunc) {
+                try {
+                    decoded = decodeJWTFunc(result.token);
+                    roles = decoded ? (decoded.roles || []) : [];
+                    
+                    // Debug: Log roles to console
+                    console.log('Login: Decoded token roles:', roles);
+                } catch (e) {
+                    console.error('Error decoding token:', e);
+                }
+            }
+            
+            // If using local setToken, manually update navbar
+            if (!window.setToken && window.updateNavbar) {
+                window.updateNavbar();
+            }
+            
+            // Redirect based on role (check ROLE_ADMIN in various formats)
+            const isAdmin = roles.some(role => {
+                const roleStr = role.toString().toUpperCase();
+                return roleStr === 'ROLE_ADMIN' || role === 'ROLE_ADMIN';
+            });
+            
+            if (isAdmin) {
+                console.log('Login: Redirecting to admin dashboard');
+                window.location.href = '{{ path('app_dashboard_admin') }}';
+            } else {
+                console.log('Login: Redirecting to customer dashboard');
+                window.location.href = '{{ path('app_dashboard_customer') }}';
+            }
+        } else {
+            const errorMsg = result.message || result.error || 'Invalid credentials';
+            alert('Login failed: ' + errorMsg);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    }
+});
+</script>
+{% endblock %}
