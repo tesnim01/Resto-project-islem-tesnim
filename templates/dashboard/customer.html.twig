@@ -1,0 +1,371 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Customer Dashboard - Restaurant Management{% endblock %}
+
+{% block body %}
+<div class="container-fluid fade-in" id="dashboardContent" style="display: none;">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-yellow mb-3">
+                <i class="bi bi-house-door-fill me-2"></i>Customer Dashboard
+            </h1>
+            <p class="text-muted-custom">Good to see you, <strong class="text-yellow" id="userName">User</strong>.</p>
+        </div>
+    </div>
+
+    {# Stats Cards #}
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted-custom mb-1">Total Orders</p>
+                            <h2 class="stat-value mb-0" id="totalOrders">0</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted-custom mb-1">Pending Orders</p>
+                            <h2 class="stat-value mb-0" id="pendingOrders">0</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted-custom mb-1">My Reviews</p>
+                            <h2 class="stat-value mb-0" id="totalReviews">0</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted-custom mb-1">Available Items</p>
+                            <h2 class="stat-value mb-0" id="availableProducts">0</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-menu-button-wide"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Quick Actions #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightning-charge me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{{ path('app_products') }}" class="btn btn-yellow w-100">
+                                <i class="bi bi-menu-button-wide me-2"></i>View Menu
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('app_orders') }}" class="btn btn-yellow-outline w-100">
+                                <i class="bi bi-cart me-2"></i>My Orders
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('app_reviews') }}" class="btn btn-yellow-outline w-100">
+                                <i class="bi bi-star me-2"></i>My Reviews
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('app_dashboard_profile') }}" class="btn btn-yellow-outline w-100">
+                                <i class="bi bi-person me-2"></i>Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Recent Orders #}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    <div id="ordersList" class="text-center py-4">
+                        <div class="spinner-border spinner-border-yellow" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Account Info</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> <span id="accountName">-</span></p>
+                    <p><strong>Email:</strong> <span id="accountEmail">-</span></p>
+                    <p><strong>Phone:</strong> <span id="accountPhone">-</span></p>
+                    <p><strong>Member since:</strong> <span id="accountCreated">-</span></p>
+                    <hr class="my-3" style="border-color: var(--bs-grey-light);">
+                    <a href="{{ path('app_dashboard_profile') }}" class="btn btn-yellow-outline w-100">
+                        <i class="bi bi-gear me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Check if user should be on this dashboard (redirect admins to admin dashboard)
+// This runs IMMEDIATELY before page content is visible to prevent flash
+(function checkDashboardAccessImmediate() {
+    // Try to use functions from app.js which should be loaded from base.html.twig
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const decodeJWTFunc = window.decodeJWT || (typeof decodeJWTLocal === 'function' ? decodeJWTLocal : null);
+    
+    if (!getTokenFunc || !decodeJWTFunc) {
+        // Functions not loaded yet, try again very quickly
+        setTimeout(checkDashboardAccessImmediate, 10);
+        return;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    const decoded = decodeJWTFunc(token);
+    if (decoded && decoded.roles) {
+        const roles = decoded.roles || [];
+        const isAdmin = roles.some(role => {
+            const roleStr = role.toString().toUpperCase();
+            return roleStr === 'ROLE_ADMIN';
+        });
+        
+        // If admin, redirect to admin dashboard IMMEDIATELY
+        if (isAdmin) {
+            window.location.href = '{{ path('app_dashboard_admin') }}';
+            return;
+        }
+    }
+    
+    // If check passed (not admin), show the content
+    const dashboardContent = document.getElementById('dashboardContent');
+    if (dashboardContent) {
+        dashboardContent.style.display = '';
+    }
+})();
+
+// Load user info from JWT token
+function loadUserInfo() {
+    // Use window.* functions from app.js, fallback to local functions
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const decodeJWTFunc = window.decodeJWT || (typeof decodeJWTLocal === 'function' ? decodeJWTLocal : null);
+    
+    if (!getTokenFunc || !decodeJWTFunc) {
+        // Wait for functions to be available
+        setTimeout(loadUserInfo, 50);
+        return;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    const decoded = decodeJWTFunc(token);
+    if (decoded) {
+        const name = decoded.name || 'User';
+        const email = decoded.username || decoded.email || '-';
+        
+        const userNameEl = document.getElementById('userName');
+        const accountNameEl = document.getElementById('accountName');
+        const accountEmailEl = document.getElementById('accountEmail');
+        
+        if (userNameEl) userNameEl.textContent = name;
+        if (accountNameEl) accountNameEl.textContent = name;
+        if (accountEmailEl) accountEmailEl.textContent = email;
+    }
+}
+
+// Global flag to prevent multiple loads
+if (!window._dashboardDataLoaded) {
+    window._dashboardDataLoaded = false;
+}
+
+// Load dashboard data
+async function loadDashboardData() {
+    // Prevent multiple loads
+    if (window._dashboardDataLoaded) {
+        return;
+    }
+    
+    // Use window.* functions from app.js, fallback to local functions
+    const getTokenFunc = window.getToken || (typeof getToken === 'function' ? getToken : null);
+    const apiRequestFunc = window.apiRequest || (typeof apiRequest === 'function' ? apiRequest : null);
+    
+    if (!getTokenFunc || !apiRequestFunc) {
+        // Wait for functions to be available
+        setTimeout(loadDashboardData, 50);
+        return;
+    }
+    
+    const token = getTokenFunc();
+    if (!token) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+
+    // Mark as loading
+    window._dashboardDataLoaded = true;
+
+    // Load user info first (from JWT - immediate)
+    loadUserInfo();
+
+    try {
+        // Load full user data from API (includes phone, createdAt)
+        const userResponse = await apiRequestFunc('/api/dashboard/me', { method: 'GET' });
+        if (userResponse && userResponse.ok) {
+            const userData = await userResponse.json();
+            // Update account info section with full user data
+            if (userData.phone) {
+                const phoneEl = document.getElementById('accountPhone');
+                if (phoneEl) phoneEl.textContent = userData.phone;
+            } else {
+                const phoneEl = document.getElementById('accountPhone');
+                if (phoneEl) phoneEl.textContent = 'Not provided';
+            }
+            if (userData.createdAt) {
+                const date = new Date(userData.createdAt);
+                const createdEl = document.getElementById('accountCreated');
+                if (createdEl) createdEl.textContent = date.toLocaleDateString();
+            }
+        }
+
+        // Load orders
+        const ordersResponse = await apiRequestFunc('/api/orders', { method: 'GET' });
+        if (ordersResponse && ordersResponse.ok) {
+            const orders = await ordersResponse.json();
+            displayOrders(orders);
+            updateStats(orders);
+        }
+
+        // Load available products count
+        const productsResponse = await apiRequestFunc('/api/public/products', { method: 'GET' });
+        if (productsResponse && productsResponse.ok) {
+            const products = await productsResponse.json();
+            const availableCount = products.filter(p => p.available).length;
+            const productsEl = document.getElementById('availableProducts');
+            if (productsEl) {
+                productsEl.textContent = availableCount;
+            }
+        }
+
+        // Load reviews count
+        const reviewsResponse = await apiRequestFunc('/api/reviews', { method: 'GET' });
+        if (reviewsResponse && reviewsResponse.ok) {
+            const reviews = await reviewsResponse.json();
+            const reviewsEl = document.getElementById('totalReviews');
+            if (reviewsEl) {
+                reviewsEl.textContent = reviews.length || 0;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        window._dashboardDataLoaded = false; // Allow retry on error
+    }
+}
+
+// Reset flag on page unload (for next page load)
+window.addEventListener('beforeunload', function() {
+    window._dashboardDataLoaded = false;
+});
+
+// Also reset if page is being hidden (Turbo navigation)
+document.addEventListener('turbo:before-cache', function() {
+    window._dashboardDataLoaded = false;
+}, { once: true });
+
+function displayOrders(orders) {
+    const ordersList = document.getElementById('ordersList');
+    
+    if (!orders || orders.length === 0) {
+        ordersList.innerHTML = `
+            <p class="text-muted-custom">
+                <i class="bi bi-inbox me-2"></i>No orders yet. 
+                <a href="{{ path('app_products') }}" class="text-yellow">Start ordering!</a>
+            </p>
+        `;
+        return;
+    }
+
+    const ordersHtml = orders.slice(0, 5).map(order => `
+        <div class="border-bottom border-secondary pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Order #${order.id}</h6>
+                    <small class="text-muted-custom">${window.formatDateTime ? window.formatDateTime(order.order_date) : order.order_date}</small>
+                </div>
+                <div class="text-end">
+                    <span class="badge badge-yellow">${order.status}</span>
+                    <p class="mb-0 mt-1"><strong class="text-yellow">${window.formatMoney ? window.formatMoney(order.total_price) : ('$' + order.total_price)}</strong></p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    ordersList.innerHTML = ordersHtml;
+}
+
+function updateStats(orders) {
+    document.getElementById('totalOrders').textContent = orders.length;
+    document.getElementById('pendingOrders').textContent = orders.filter(o => o.status === 'PENDING').length;
+}
+
+
+// Load data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Load dashboard data (access check is done immediately in IIFE above)
+    loadDashboardData();
+});
+</script>
+{% endblock %}

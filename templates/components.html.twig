@@ -1,0 +1,93 @@
+{# Master Components File - Re-export component macros using 'from' with 'as' to expose them #}
+{# This file acts as a bridge to expose all component macros under a single namespace #}
+{% from 'components/_page_header.html.twig' import page_header as _page_header %}
+{% from 'components/_stat_card.html.twig' import stat_card as _stat_card %}
+{% from 'components/_management_card.html.twig' import management_card as _management_card %}
+{% from 'components/_empty_state.html.twig' import empty_state as _empty_state %}
+{% from 'components/_form_input.html.twig' import form_input as _form_input, form_textarea as _form_textarea, form_select as _form_select, form_switch as _form_switch %}
+{% from 'components/_product_card.html.twig' import admin_product_card as _admin_product_card, customer_product_card as _customer_product_card %}
+{% from 'components/_category_card.html.twig' import category_card as _category_card %}
+{% from 'components/_order_card.html.twig' import customer_order_card as _customer_order_card, admin_order_card as _admin_order_card %}
+{% from 'components/_user_card.html.twig' import user_card as _user_card %}
+{% from 'components/_action_button.html.twig' import action_button as _action_button, link_button as _link_button %}
+
+{# Re-export by defining macros that call the imported ones #}
+{% macro page_header(title, icon, back_url, back_text) %}
+    {% from 'components/_page_header.html.twig' import page_header %}
+    {{ page_header(title, icon, back_url, back_text) }}
+{% endmacro %}
+
+{% macro stat_card(label, value_id, icon, col_size) %}
+    {% from 'components/_stat_card.html.twig' import stat_card %}
+    {{ stat_card(label, value_id, icon, col_size) }}
+{% endmacro %}
+
+{% macro management_card(title, icon, content_id, add_button_text, add_button_onclick, modal_target) %}
+    {% from 'components/_management_card.html.twig' import management_card %}
+    {{ management_card(title, icon, content_id, add_button_text, add_button_onclick, modal_target) }}
+{% endmacro %}
+
+{% macro empty_state(icon, message, action_text, action_url) %}
+    {% from 'components/_empty_state.html.twig' import empty_state %}
+    {{ empty_state(icon, message, action_text, action_url) }}
+{% endmacro %}
+
+{% macro form_input(id, label, icon, type, required, placeholder, value, additional_attrs) %}
+    {% from 'components/_form_input.html.twig' import form_input %}
+    {{ form_input(id, label, icon, type, required, placeholder, value, additional_attrs) }}
+{% endmacro %}
+
+{% macro form_textarea(id, label, icon, rows, required, placeholder, value) %}
+    {% from 'components/_form_input.html.twig' import form_textarea %}
+    {{ form_textarea(id, label, icon, rows, required, placeholder, value) }}
+{% endmacro %}
+
+{% macro form_select(id, label, icon, options, required, value) %}
+    {% from 'components/_form_input.html.twig' import form_select %}
+    {{ form_select(id, label, icon, options, required, value) }}
+{% endmacro %}
+
+{% macro form_switch(id, label, checked) %}
+    {% from 'components/_form_input.html.twig' import form_switch %}
+    {{ form_switch(id, label, checked) }}
+{% endmacro %}
+
+{% macro admin_product_card(product, edit_onclick, delete_onclick) %}
+    {% from 'components/_product_card.html.twig' import admin_product_card %}
+    {{ admin_product_card(product, edit_onclick, delete_onclick) }}
+{% endmacro %}
+
+{% macro customer_product_card(product, show_add_button) %}
+    {% from 'components/_product_card.html.twig' import customer_product_card %}
+    {{ customer_product_card(product, show_add_button) }}
+{% endmacro %}
+
+{% macro category_card(category, edit_onclick, delete_onclick) %}
+    {% from 'components/_category_card.html.twig' import category_card %}
+    {{ category_card(category, edit_onclick, delete_onclick) }}
+{% endmacro %}
+
+{% macro customer_order_card(order, view_details_onclick) %}
+    {% from 'components/_order_card.html.twig' import customer_order_card %}
+    {{ customer_order_card(order, view_details_onclick) }}
+{% endmacro %}
+
+{% macro admin_order_card(order, update_status_onclick, view_details_onclick) %}
+    {% from 'components/_order_card.html.twig' import admin_order_card %}
+    {{ admin_order_card(order, update_status_onclick, view_details_onclick) }}
+{% endmacro %}
+
+{% macro user_card(user) %}
+    {% from 'components/_user_card.html.twig' import user_card %}
+    {{ user_card(user) }}
+{% endmacro %}
+
+{% macro action_button(text, icon, onclick, type, variant, size, additional_classes) %}
+    {% from 'components/_action_button.html.twig' import action_button %}
+    {{ action_button(text, icon, onclick, type, variant, size, additional_classes) }}
+{% endmacro %}
+
+{% macro link_button(text, url, icon, variant, size) %}
+    {% from 'components/_action_button.html.twig' import link_button %}
+    {{ link_button(text, url, icon, variant, size) }}
+{% endmacro %}

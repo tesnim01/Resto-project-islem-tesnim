@@ -1,0 +1,10 @@
+{# Empty State Component #}
+{% macro empty_state(icon, message, action_text = null, action_url = null) %}
+    <div class="col-12 text-center text-muted-custom py-5">
+        <i class="bi {{ icon }} fs-1 mb-3 d-block"></i>
+        <p>{{ message }}</p>
+        {% if action_text and action_url %}
+            <a href="{{ action_url }}" class="text-yellow">{{ action_text }}</a>
+        {% endif %}
+    </div>
+{% endmacro %}

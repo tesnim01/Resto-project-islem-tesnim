@@ -1,0 +1,52 @@
+{# Order Card Component (for customer) #}
+{% macro customer_order_card(order, view_details_onclick = null) %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h6 class="mb-1">Order #{{ order.id }}</h6>
+                    <small class="text-muted-custom">{{ order.order_date }}</small>
+                </div>
+                <div class="col-md-3">
+                    <span class="badge badge-yellow">{{ order.status }}</span>
+                </div>
+                <div class="col-md-3">
+                    <strong class="text-yellow">${{ order.total_price }}</strong>
+                </div>
+                {% if view_details_onclick %}
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-sm btn-yellow-outline" onclick="{{ view_details_onclick }}">
+                            <i class="bi bi-eye me-1"></i>Details
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{# Order Card Component (for admin) #}
+{% macro admin_order_card(order, update_status_onclick = null, view_details_onclick = null) %}
+    <tr>
+        <td>#{{ order.id }}</td>
+        <td>{{ order.customer?.name ?: 'N/A' }}</td>
+        <td>{{ order.order_date }}</td>
+        <td>
+            <select class="form-select form-select-sm bg-black text-light border-secondary" 
+                    onchange="{{ update_status_onclick }}({{ order.id }}, this.value)">
+                <option value="PENDING" {% if order.status == 'PENDING' %}selected{% endif %}>PENDING</option>
+                <option value="PREPARING" {% if order.status == 'PREPARING' %}selected{% endif %}>PREPARING</option>
+                <option value="DELIVERED" {% if order.status == 'DELIVERED' %}selected{% endif %}>DELIVERED</option>
+                <option value="CANCELED" {% if order.status == 'CANCELED' %}selected{% endif %}>CANCELED</option>
+            </select>
+        </td>
+        <td class="text-yellow">${{ order.total_price }}</td>
+        <td>
+            {% if view_details_onclick %}
+                <button class="btn btn-sm btn-yellow-outline" onclick="{{ view_details_onclick }}({{ order.id }})">
+                    <i class="bi bi-eye"></i>
+                </button>
+            {% endif %}
+        </td>
+    </tr>
+{% endmacro %}

@@ -1,0 +1,76 @@
+{# Product Card Component (for admin) #}
+{% macro admin_product_card(product, edit_onclick, delete_onclick) %}
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="card h-100 product-card">
+            <div class="position-relative">
+                {% if product.imageUrl %}
+                    <img src="{{ product.imageUrl }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                {% endif %}
+                <span class="position-absolute top-0 end-0 m-2">
+                    {% if product.available %}
+                        <span class="badge bg-success">Available</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Out of Stock</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-yellow">{{ product.name }}</h5>
+                <p class="card-text text-muted-custom small flex-grow-1">{{ product.description ?: 'No description' }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <span class="h5 mb-0 text-yellow">${{ product.price }}</span>
+                    <div>
+                        <button class="btn btn-sm btn-yellow-outline" onclick="{{ edit_onclick }}" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="{{ delete_onclick }}" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <small class="text-muted-custom mt-2">
+                    <i class="bi bi-tag me-1"></i>{{ product.category?.name ?: 'No category' }}
+                </small>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{# Product Card Component (for customer menu) #}
+{% macro customer_product_card(product, show_add_button = false) %}
+    <div class="col-md-4 col-lg-3">
+        <div class="card product-card h-100">
+            {% if product.imageUrl %}
+                <img src="{{ product.imageUrl }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+                <div class="card-img-top d-flex align-items-center justify-content-center bg-grey" style="height: 200px;">
+                    <i class="bi bi-image text-muted-custom" style="font-size: 3rem;"></i>
+                </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-yellow">{{ product.name }}</h5>
+                <p class="card-text text-muted-custom flex-grow-1">{{ product.description ?: 'No description available' }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <span class="h5 mb-0 text-yellow">${{ product.price }}</span>
+                    {% if product.available %}
+                        <span class="badge badge-yellow">Available</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Out of Stock</span>
+                    {% endif %}
+                </div>
+                {% if product.available and show_add_button %}
+                    <button class="btn btn-yellow w-100 mt-3" onclick="window.addToCart({{ product.id }})">
+                        <i class="bi bi-cart-plus me-2"></i>Add to Order
+                    </button>
+                    <button class="btn btn-yellow-outline w-100 mt-2" onclick="window.viewCart()">
+                        <i class="bi bi-cart me-2"></i>View Cart
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
